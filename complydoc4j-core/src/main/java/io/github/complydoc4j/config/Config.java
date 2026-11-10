@@ -34,7 +34,12 @@ public record Config(Sensitive sensitive, Hidden hidden, String sourceDir, Strin
         }
     }
 
-    public record Visibility(int minCharacters, int zeroWidthRun) {}
+    /**
+     * How hidden text is judged: what a page is drawn at, how little contrast under a glyph
+     * means nothing is drawn there, and what counts as white, tiny, or a passage at all.
+     */
+    public record Visibility(int renderDpi, int minContrast, double minFontSizePt, int minCharacters,
+            double minHiddenShare, double nearWhite, int zeroWidthRun, int maxPages) {}
 
     public record InstructionPattern(String id, String label, List<String> languages, List<String> regexes) {
         public InstructionPattern {

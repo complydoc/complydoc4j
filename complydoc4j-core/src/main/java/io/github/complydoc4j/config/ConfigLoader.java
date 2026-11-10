@@ -109,8 +109,15 @@ public final class ConfigLoader {
         }
         return new Config.Hidden(
                 integer(raw.get("schema_version"), 1),
-                new Config.Visibility(integer(visibility.get("min_characters"), 4),
-                        integer(visibility.get("zero_width_run"), 8)),
+                new Config.Visibility(
+                        integer(visibility.get("render_dpi"), 100),
+                        integer(visibility.get("min_contrast"), 16),
+                        number(visibility.get("min_font_size_pt"), 1.0),
+                        integer(visibility.get("min_characters"), 4),
+                        number(visibility.get("min_hidden_share"), 0.8),
+                        number(visibility.get("near_white"), 0.94),
+                        integer(visibility.get("zero_width_run"), 8),
+                        integer(visibility.get("max_pages"), 500)),
                 number(instructions.get("classifier_threshold"), 0.8),
                 patterns);
     }

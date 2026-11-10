@@ -4,6 +4,7 @@ import io.github.complydoc4j.chunks.ChunkInspector;
 import io.github.complydoc4j.config.Config;
 import io.github.complydoc4j.hidden.ContentFinding;
 import io.github.complydoc4j.hidden.HiddenCheck;
+import io.github.complydoc4j.read.DocumentReader;
 import io.github.complydoc4j.sensitive.Scanner;
 import io.github.complydoc4j.sensitive.SensitiveMatch;
 import io.github.complydoc4j.text.Py;
@@ -88,62 +89,72 @@ public final class DocumentAudit {
             }
             pages.computeIfAbsent(number, n -> new ArrayList<>()).add(member.text());
         }
-        List<Integer> numbers = new ArrayList<>(pages.keySet());
         List<String> texts = new ArrayList<>();
         pages.values().forEach(parts -> texts.add(String.join("\n\n", parts)));
+        Path path = Path.of(key);
+        Source source = new Source(key, key, path, digest(path, members), formatOf(key), numbered, loaderName, "loader",
+                true, List.of(), metadataFindings(members, config, reveal, scannedValues), pathKeys(members));
+        return fromPages(source, new ArrayList<>(pages.keySet()), texts, config, reveal, keepText, started, 0);
+    }
 
+    /** A file read by complydoc4j's own readers, audited as {@code complydoc audit} audits it. */
+    public static Report.Document auditFile(Path file, Path root, Config config, boolean reveal, boolean keepText)
+            throws IOException {
+        long started = System.nanoTime();
+        DocumentReader.Read read = DocumentReader.read(file);
+        double readSeconds = (System.nanoTime() - started) / 1e9;
+        List<Integer> numbers = new ArrayList<>();
+        for (int n = 1; n <= read.pages().size(); n++) {
+            numbers.add(n);
+        }
+        String relative = root.relativize(file).toString().replace('\\', '/');
+        Source source = new Source(file.toString(), relative, file, digest(file, List.of()), read.format(),
+                read.pageCountKnown(), DocumentReader.NAME, "native", false, read.warnings(), List.of(), List.of());
+        return fromPages(source, numbers, read.pages(), config, reveal, keepText, started, readSeconds);
+    }
+
+    /** Where a document's pages came from, and what is known of it before they are read. */
+    private record Source(String path, String relative, Path file, String sha256, String format, boolean pageCountKnown,
+            String reader, String origin, boolean loaderText, List<String> warnings,
+            List<Report.MetadataFinding> metadataFindings, List<String> pathExposures) {}
+
+    private static Report.Document fromPages(Source source, List<Integer> numbers, List<String> texts, Config config,
+            boolean reveal, boolean keepText, long started, double readSeconds) {
         long scanStart = System.nanoTime();
         Scanner.PageScan scan = scanNumbered(numbers, texts, config, reveal);
         List<HiddenCheck.Page> checked = new ArrayList<>();
         for (int i = 0; i < texts.size(); i++) {
             checked.add(new HiddenCheck.Page(numbers.get(i), texts.get(i)));
         }
-        Path path = Path.of(key);
-        HiddenCheck.Result hidden = HiddenCheck.check(path, checked, config, reveal, true);
+        HiddenCheck.Result hidden = HiddenCheck.check(source.file(), checked, config, reveal, source.loaderText());
         double scanSeconds = (System.nanoTime() - scanStart) / 1e9;
 
         List<Report.PageText> extracted = new ArrayList<>();
-        List<Report.Extraction> extractions = new ArrayList<>();
         int characters = 0;
         for (int i = 0; i < texts.size(); i++) {
             String text = texts.get(i);
             characters += Py.len(Py.strip(text));
             String shown = reveal ? text : Scanner.maskText(text, config).text();
             Map<String, Map<String, Integer>> tokens = new TreeMap<>();
-            tokens.put(loaderName, Map.of(Tokens.ENCODING, Tokens.count(text)));
-            extracted.add(new Report.PageText(numbers.get(i), "loader", Py.len(text), keepText ? shown : "", "",
-                    false, Map.of(), loaderName, Map.of(), Map.of(), tokens, Map.of(), null, null, null, null));
+            tokens.put(source.reader(), Map.of(Tokens.ENCODING, Tokens.count(text)));
+            extracted.add(new Report.PageText(numbers.get(i), source.origin(), Py.len(text), keepText ? shown : "", "",
+                    false, Map.of(), source.reader(), Map.of(), Map.of(), tokens, Map.of(), null, null, null, null));
         }
-        extractions.add(new Report.Extraction(loaderName, characters, null, 0.0, "none", false, 1.0, false));
-
+        List<Report.Extraction> extractions = List.of(
+                new Report.Extraction(source.reader(), characters, null, round(readSeconds, 3), "none", false, 1.0,
+                        false));
         double total = (System.nanoTime() - started) / 1e9;
         return new Report.Document(
-                key,
-                key,
-                digest(path, members),
-                formatOf(key),
-                texts.size(),
-                numbered,
-                List.of(),
-                null,
-                null,
-                new Report.Sensitive(key, scan.matches(), scan.silent(), scan.unscannedCategories(),
+                source.path(), source.relative(), source.sha256(), source.format(), texts.size(),
+                source.pageCountKnown(), source.warnings(), null, null,
+                new Report.Sensitive(source.relative(), scan.matches(), scan.silent(), scan.unscannedCategories(),
                         scan.unreadablePages(), scan.pagesScanned(), reveal,
                         reveal ? revealBlocked(config) : List.of(), Map.of()),
                 null,
-                new Report.Timing(0.0, round(total - scanSeconds, 3), round(scanSeconds, 3), round(total, 3),
-                        round(total / Math.max(1, texts.size()), 3), null),
-                extracted,
-                extractions,
-                metadataFindings(members, config, reveal, scannedValues),
-                hidden.findings(),
-                List.of(),
-                0,
-                null,
-                hidden.visibilityChecked(),
-                hidden.note(),
-                List.of(),
-                pathKeys(members));
+                new Report.Timing(round(readSeconds, 3), round(Math.max(0, total - scanSeconds - readSeconds), 3),
+                        round(scanSeconds, 3), round(total, 3), round(total / Math.max(1, texts.size()), 3), null),
+                extracted, extractions, source.metadataFindings(), hidden.findings(), List.of(), 0, null,
+                hidden.visibilityChecked(), hidden.note(), List.of(), source.pathExposures());
     }
 
     /** Scan pages whose numbers come from the loader, not from their position. */

@@ -2741,12 +2741,12 @@
       "sensitive"
     ],
     "config_digest": "552ad41c881f258c",
-    "config_dir": "/Users/duarte/.herdr/worktrees/complydoc/feature-java-version-for-langchain4j-and-quarkus-same-re/src/complydoc/config",
+    "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
       "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
-      "commit": "a2f1ce616c0e575e03cdef66c6b9c8c5699db3a0",
-      "dirty": false,
+      "commit": "733ea75206fe62fe5345ab85111849e660a2912c",
+      "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
@@ -2755,7 +2755,7 @@
     "duration_seconds": 0.0,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T19:05:59+00:00",
+    "finished_at": "2026-11-10T19:41:38+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2771,7 +2771,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T19:05:59+00:00",
+    "started_at": "2026-11-10T19:41:38+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.10",
@@ -2824,7 +2824,7 @@
       "pypdf": "6.18.0"
     },
     "name": "identifiers_eu",
-    "overhead_seconds": 0.14,
+    "overhead_seconds": 0.064,
     "scan": "patterns",
     "seconds": 0.0,
     "stages": [
@@ -3195,9 +3195,9 @@
           }
         ],
         "ids": [
-          "f6f7c50d-2cf9-48e7-81a8-03d8ecfb247f",
-          "137635e4-6a04-4c34-9271-ba16ff1557ff",
-          "3bafb792-2313-4cfe-b630-40e971e0e115"
+          "e84acacf-e1b3-4ac8-b24d-f9a0a935f9a2",
+          "80fd64f8-bfc2-4ebd-8631-a0be22ece899",
+          "1da09cab-4cb9-4823-95be-1b4d1a955c94"
         ],
         "index": 1,
         "kind": "store",
