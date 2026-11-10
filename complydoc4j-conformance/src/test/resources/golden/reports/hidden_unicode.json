@@ -41,18 +41,18 @@
     "pages_total": 1,
     "pages_unreadable": 0,
     "projected_seconds": {
-      "100": 1.0,
-      "1000": 10.0,
-      "10000": 100.0,
-      "100000": 1000.0
+      "100": 0.5,
+      "1000": 5.0,
+      "10000": 50.0,
+      "100000": 500.0
     },
     "read_seconds": 0.0,
     "readiness_bands": {
       "ready": 1
     },
-    "scan_seconds": 0.007,
-    "seconds_per_document": 0.01,
-    "seconds_per_page": 0.01,
+    "scan_seconds": 0.002,
+    "seconds_per_document": 0.005,
+    "seconds_per_page": 0.005,
     "sensitive_by_category": {},
     "sensitive_by_severity": {},
     "sensitive_total": 0,
@@ -219,7 +219,7 @@
         "poor": 0
       }
     },
-    "total_seconds": 0.01,
+    "total_seconds": 0.005,
     "total_text_path_usd": 2.8800000000000002e-05,
     "total_vision_path_usd": null
   },
@@ -2230,10 +2230,10 @@
       "timing": {
         "analyse_seconds": 0.003,
         "read_seconds": 0.0,
-        "scan_seconds": 0.007,
-        "seconds_per_page": 0.01,
+        "scan_seconds": 0.002,
+        "seconds_per_page": 0.005,
         "started_at": null,
-        "total_seconds": 0.01
+        "total_seconds": 0.005
       },
       "verification": null,
       "visibility_checked": false,
@@ -2635,22 +2635,22 @@
       "readiness",
       "sensitive"
     ],
-    "config_digest": "552ad41c881f258c",
-    "config_dir": "<complydoc>/src/complydoc/config",
+    "config_digest": "e9fa33925e93dd7a",
+    "config_dir": "/private/tmp/claude-501/-Users-duarte--herdr-worktrees-complydoc-feature-java-version-for-langchain4j-and-quarkus-same-re/18e1a542-9b5c-41c3-afcc-25e1caf63213/scratchpad/mask-fix/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
-      "commit": "733ea75206fe62fe5345ab85111849e660a2912c",
+      "branch": "main",
+      "commit": "61caf53a21c448d398878209d53a74d76c2716c2",
       "dirty": true,
-      "repository": "github.com/complydoc/complydoc",
+      "repository": "github.com/complydoc/complydoc4j",
       "url": null,
       "workflow": null
     },
     "documents_read_after_worker_failure": 0,
-    "duration_seconds": 0.008,
+    "duration_seconds": 0.009,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T19:41:38+00:00",
+    "finished_at": "2026-11-10T20:04:31+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2666,10 +2666,10 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T19:41:38+00:00",
+    "started_at": "2026-11-10T20:04:31+00:00",
     "target": "documents",
     "timeout_seconds": null,
-    "tool_version": "0.7.10",
+    "tool_version": "0.7.11",
     "verify_model": null,
     "verify_scope": null
   },
@@ -2718,9 +2718,9 @@
       "langchain-text-splitters": "1.1.2"
     },
     "name": "hidden_unicode",
-    "overhead_seconds": 0.757,
+    "overhead_seconds": 0.767,
     "scan": "patterns",
-    "seconds": 0.008,
+    "seconds": 0.009,
     "stages": [
       {
         "characters_in": 324,
@@ -2863,11 +2863,11 @@
         "hosts": [],
         "identifiers": [],
         "ids": [
-          "c7a4b508-8371-4139-816d-d6b608660b86",
-          "1606a4a9-5188-42fb-9310-824bfe9df02b",
-          "a0b94e01-0774-4ef5-ada3-cc03d1754d59",
-          "a8103e96-bf7f-4210-b5da-be5fc02e1665",
-          "611d9692-4311-4916-a182-b39ca20c5db5"
+          "bbea3f84-c994-4c2c-bd5a-ec6b7d0793a7",
+          "d4f8ea79-adc0-447a-aa1b-2ef79ddb8b08",
+          "96f186e5-fb59-4065-b75b-01e084a22c9b",
+          "9cd28d99-25f0-423f-80fd-4b5c9cfba135",
+          "5a499c87-57ce-4179-8b3b-f624504495c4"
         ],
         "index": 1,
         "kind": "store",
@@ -2933,7 +2933,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0076,
+        "seconds": 0.0093,
         "sources": [
           "hidden_unicode.txt"
         ],
@@ -3027,7 +3027,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0075,
+        "seconds": 0.0092,
         "sources": [],
         "started": 0.0001,
         "tags": [

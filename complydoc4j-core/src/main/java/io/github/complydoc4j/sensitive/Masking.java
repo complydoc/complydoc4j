@@ -4,10 +4,8 @@ import io.github.complydoc4j.config.Config;
 import io.github.complydoc4j.text.Py;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -72,17 +70,24 @@ public final class Masking {
      * Replace each found identifier with its masked form, a character at a time, strongest
      * evidence first, never writing where something has already been masked: two detectors
      * can claim the same characters, and the weaker must not write back over the stronger.
+     *
+     * <p>A match is placed by line and column and may run on past its line, as an IBAN a
+     * narrow column wrapped does. It is covered where it lies in the whole text, and the line
+     * breaks inside it stay, so the lines are as they were.
      */
     public static Masked maskMatches(String text, List<SensitiveMatch> matches) {
         if (matches.isEmpty()) {
             return new Masked(text, 0, 0);
         }
-        String[] split = text.split("\n", -1);
-        List<int[]> lines = new ArrayList<>();
-        for (String line : split) {
-            lines.add(line.codePoints().toArray());
+        int[] chars = text.codePoints().toArray();
+        List<Integer> starts = new ArrayList<>();
+        starts.add(0);
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '\n') {
+                starts.add(i + 1);
+            }
         }
-        Map<Integer, Set<Integer>> covered = new HashMap<>();
+        Set<Integer> covered = new HashSet<>();
         int replaced = 0;
         int confirmed = 0;
         List<SensitiveMatch> ordered = new ArrayList<>(matches);
@@ -91,55 +96,47 @@ public final class Masking {
                 .thenComparingInt(SensitiveMatch::column));
         for (SensitiveMatch match : ordered) {
             int index = match.line() - 1;
-            if (index < 0 || index >= lines.size()) {
+            if (index < 0 || index >= starts.size() || match.column() < 0) {
                 continue;
             }
-            int[] chars = lines.get(index);
-            int start = match.column();
+            int start = starts.get(index) + match.column();
             int end = start + match.length();
-            if (start < 0 || end > chars.length) {
+            if (end > chars.length) {
                 continue;
             }
-            Set<Integer> done = covered.computeIfAbsent(index, k -> new HashSet<>());
             List<Integer> free = new ArrayList<>();
             for (int position = start; position < end; position++) {
-                if (!done.contains(position)) {
+                if (!covered.contains(position)) {
                     free.add(position);
                 }
             }
             if (free.isEmpty()) {
+                // Wholly inside something already masked.
                 continue;
             }
             int[] masked = match.masked().codePoints().toArray();
             if (masked.length == match.length()) {
                 for (int position : free) {
-                    chars[position] = masked[position - start];
+                    if (chars[position] != '\r' && chars[position] != '\n') {
+                        chars[position] = masked[position - start];
+                    }
                 }
             } else {
                 int[] joined = new int[chars.length - (end - start) + masked.length];
                 System.arraycopy(chars, 0, joined, 0, start);
                 System.arraycopy(masked, 0, joined, start, masked.length);
                 System.arraycopy(chars, end, joined, start + masked.length, chars.length - end);
-                lines.set(index, joined);
+                chars = joined;
             }
             for (int position = start; position < end; position++) {
-                done.add(position);
+                covered.add(position);
             }
             replaced++;
             if ("confirmed".equals(match.evidence())) {
                 confirmed++;
             }
         }
-        StringBuilder out = new StringBuilder();
-        for (int i = 0; i < lines.size(); i++) {
-            if (i > 0) {
-                out.append('\n');
-            }
-            for (int c : lines.get(i)) {
-                out.appendCodePoint(c);
-            }
-        }
-        return new Masked(out.toString(), replaced, confirmed);
+        return new Masked(new String(chars, 0, chars.length), replaced, confirmed);
     }
 
     private static int rank(String evidence) {

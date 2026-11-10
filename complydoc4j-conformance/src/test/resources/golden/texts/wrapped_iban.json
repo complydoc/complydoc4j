@@ -1,0 +1,56 @@
+[
+  {
+    "text": "Rechnung Nr. 2026-0417\n\nBitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: DE89 3704 0044\n0532 0130 00\nBIC: COBADEFFXXX\n\nZahlbar innerhalb von 14 Tagen.\n",
+    "matches": [
+      {
+        "category": "iban",
+        "line": 4,
+        "column": 6,
+        "length": 27,
+        "masked": "•••• •••• •••• •••• ••30 00",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "iban_mod97"
+        ],
+        "context_term": null,
+        "fingerprint": "id-f73d75cef3ac01ed"
+      }
+    ],
+    "masked": "Rechnung Nr. 2026-0417\n\nBitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: •••• •••• ••••\n•••• ••30 00\nBIC: COBADEFFXXX\n\nZahlbar innerhalb von 14 Tagen.\n",
+    "hidden": []
+  },
+  {
+    "text": "Rechnung Nr. 2026-0417",
+    "matches": [],
+    "masked": "Rechnung Nr. 2026-0417",
+    "hidden": []
+  },
+  {
+    "text": "Bitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: DE89 3704 0044\n0532 0130 00\nBIC: COBADEFFXXX",
+    "matches": [
+      {
+        "category": "iban",
+        "line": 2,
+        "column": 6,
+        "length": 27,
+        "masked": "•••• •••• •••• •••• ••30 00",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "iban_mod97"
+        ],
+        "context_term": null,
+        "fingerprint": "id-f73d75cef3ac01ed"
+      }
+    ],
+    "masked": "Bitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: •••• •••• ••••\n•••• ••30 00\nBIC: COBADEFFXXX",
+    "hidden": []
+  },
+  {
+    "text": "Zahlbar innerhalb von 14 Tagen.\n",
+    "matches": [],
+    "masked": "Zahlbar innerhalb von 14 Tagen.\n",
+    "hidden": []
+  }
+]
