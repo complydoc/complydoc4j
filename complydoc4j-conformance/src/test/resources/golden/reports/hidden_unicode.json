@@ -2639,18 +2639,18 @@
     "config_dir": "/private/tmp/claude-501/-Users-duarte--herdr-worktrees-complydoc-feature-java-version-for-langchain4j-and-quarkus-same-re/18e1a542-9b5c-41c3-afcc-25e1caf63213/scratchpad/mask-fix/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "main",
-      "commit": "61caf53a21c448d398878209d53a74d76c2716c2",
+      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
+      "commit": "c4f02f8b79650bb8e8289d60a8b36f9498b2a6b1",
       "dirty": true,
-      "repository": "github.com/complydoc/complydoc4j",
+      "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
     },
     "documents_read_after_worker_failure": 0,
-    "duration_seconds": 0.009,
+    "duration_seconds": 0.008,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T20:04:31+00:00",
+    "finished_at": "2026-11-10T20:06:09+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2666,7 +2666,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T20:04:31+00:00",
+    "started_at": "2026-11-10T20:06:09+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.11",
@@ -2718,9 +2718,9 @@
       "langchain-text-splitters": "1.1.2"
     },
     "name": "hidden_unicode",
-    "overhead_seconds": 0.767,
+    "overhead_seconds": 0.744,
     "scan": "patterns",
-    "seconds": 0.009,
+    "seconds": 0.008,
     "stages": [
       {
         "characters_in": 324,
@@ -2863,11 +2863,11 @@
         "hosts": [],
         "identifiers": [],
         "ids": [
-          "bbea3f84-c994-4c2c-bd5a-ec6b7d0793a7",
-          "d4f8ea79-adc0-447a-aa1b-2ef79ddb8b08",
-          "96f186e5-fb59-4065-b75b-01e084a22c9b",
-          "9cd28d99-25f0-423f-80fd-4b5c9cfba135",
-          "5a499c87-57ce-4179-8b3b-f624504495c4"
+          "d7931dfc-c085-46b2-b5cd-460c349958e9",
+          "d5e6a97f-8895-4fcb-9c7f-78713c7f2f7d",
+          "addd7a57-f7da-4119-8cab-4997a5276969",
+          "8404ce27-6412-4662-bbb1-9133ded008b2",
+          "94aeea45-fac5-442d-8fed-6e007c252006"
         ],
         "index": 1,
         "kind": "store",
@@ -2933,7 +2933,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0093,
+        "seconds": 0.0078,
         "sources": [
           "hidden_unicode.txt"
         ],
@@ -3027,7 +3027,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0092,
+        "seconds": 0.0078,
         "sources": [],
         "started": 0.0001,
         "tags": [

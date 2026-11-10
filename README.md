@@ -26,7 +26,8 @@ Complydoc4j.scanText("IBAN: GB29 NWBK 6016 1331 9268 19");  // the identifiers, 
 Complydoc4j.maskText(prompt);                               // the text, identifiers masked
 Complydoc4j.findHidden(retrievedChunk);                     // invisible text, planted instructions
 
-Report report = Complydoc4j.audit(Path.of("contracts"));  // a folder of PDF, Word, Excel, text files
+Report report = Complydoc4j.audit(Path.of("contracts"));  // a folder of PDF, Word, Excel, text files,
+                                                          // checked against its .complydoc-evals.yaml
 Report read = Complydoc4j.audit(items, "my-reader");      // documents you have already read
 Complydoc4j.write(report, Path.of(".complydoc/contracts.json"));
 ```
@@ -64,7 +65,7 @@ The report has the same shape, and these sections are null or empty:
 - **Names and organisations.** Python reads these with a statistical model, and there is
   none here. The report lists them as not looked for, as Python does when its name model
   isn't installed.
-- **Cost, readiness, routing and evals.**
+- **Cost, readiness and routing.**
 - **HTML, email, PowerPoint and images.** A folder audit lists these files as skipped. It
   reads PDF, Word, Excel, text and Markdown files, and checks how each PDF, Word and Excel
   file hides text: white, tiny, off-page, invisible or covered text, hidden runs, hidden
@@ -81,7 +82,8 @@ report.
 
 - every validator's verdict on about 7,800 values
 - a folder of PDF, Word and Excel files, audited by each side's own readers: the same
-  identifiers and the same hidden passages, with the same reasons
+  identifiers, the same hidden passages with the same reasons, and the same evals, near
+  misses scored to the same four decimals
 - the scans, masking and hidden-text findings on each fixture and each of its paragraphs
 - the full report `cd.observe` wrote for the same pipeline
 

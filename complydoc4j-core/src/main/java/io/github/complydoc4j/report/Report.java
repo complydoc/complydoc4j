@@ -115,8 +115,8 @@ public record Report(
         /** What a complydoc4j report leaves out, said once in every report it writes. */
         public static Limitation java() {
             return new Limitation("Pipeline", "Written by " + io.github.complydoc4j.Complydoc4j.TOOL
-                    + ": cost, readiness, routing and evals are not produced yet, and hidden text is checked in the"
-                    + " text itself, not in how a PDF or Office file draws it.", List.of(), "info");
+                    + ": cost, readiness and routing are not produced yet, names are not looked for, and HTML,"
+                    + " email, PowerPoint and image files are not read.", List.of(), "info");
         }
     }
 

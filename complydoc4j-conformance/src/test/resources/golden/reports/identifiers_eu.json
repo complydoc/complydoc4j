@@ -2744,10 +2744,10 @@
     "config_dir": "/private/tmp/claude-501/-Users-duarte--herdr-worktrees-complydoc-feature-java-version-for-langchain4j-and-quarkus-same-re/18e1a542-9b5c-41c3-afcc-25e1caf63213/scratchpad/mask-fix/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "main",
-      "commit": "61caf53a21c448d398878209d53a74d76c2716c2",
+      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
+      "commit": "c4f02f8b79650bb8e8289d60a8b36f9498b2a6b1",
       "dirty": true,
-      "repository": "github.com/complydoc/complydoc4j",
+      "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
     },
@@ -2755,7 +2755,7 @@
     "duration_seconds": 0.0,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T20:04:32+00:00",
+    "finished_at": "2026-11-10T20:06:10+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2771,7 +2771,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T20:04:32+00:00",
+    "started_at": "2026-11-10T20:06:10+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.11",
@@ -2824,7 +2824,7 @@
       "pypdf": "6.21.4"
     },
     "name": "identifiers_eu",
-    "overhead_seconds": 0.066,
+    "overhead_seconds": 0.07,
     "scan": "patterns",
     "seconds": 0.0,
     "stages": [
@@ -3195,9 +3195,9 @@
           }
         ],
         "ids": [
-          "f39cbfec-d921-40ce-b563-a2cdd47c41be",
-          "4163d79c-d952-4064-a0d9-2848b9db5607",
-          "382d0a7b-d89f-4085-9370-ebe388ab80b3"
+          "c836448a-bddf-4d58-9da5-dd44cb6e8bf0",
+          "c3ca3614-a0bd-45a9-a1d8-b32c599dda2e",
+          "4d3cb645-4538-485f-8e4f-220c0a6a4976"
         ],
         "index": 1,
         "kind": "store",

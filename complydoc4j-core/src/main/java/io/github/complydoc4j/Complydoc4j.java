@@ -2,6 +2,7 @@ package io.github.complydoc4j;
 
 import io.github.complydoc4j.config.Config;
 import io.github.complydoc4j.config.ConfigLoader;
+import io.github.complydoc4j.evals.Evals;
 import io.github.complydoc4j.hidden.ContentFinding;
 import io.github.complydoc4j.hidden.HiddenCheck;
 import io.github.complydoc4j.read.DocumentReader;
@@ -136,9 +137,12 @@ public final class Complydoc4j {
                 seconds, target.toString(), config, reveal, true, List.of());
         Map<String, Object> aggregate = new java.util.LinkedHashMap<>(Aggregates.of(documents));
         aggregate.put("documents_skipped", skipped.size());
+        // The facts at the top of the folder, checked against the text each document kept.
+        Path evalsFile = Evals.find(target);
+        Evals.Summary evals = evalsFile == null ? null : Evals.score(evalsFile, DocumentReader.NAME, documents);
         return new Report(run, documents, skipped, null, aggregate, List.of(Report.Limitation.java()), List.of(),
                 Map.of(), new Report.Masking(masking.revealTailChars(), masking.maskChar(), masking.neverReveal()),
-                null, List.of(), null, null, null, null, null, null, null, null, null, null,
+                null, List.of(), null, null, null, null, null, null, null, evals, null, null,
                 Report.Thresholds.shipped());
     }
 

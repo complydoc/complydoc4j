@@ -56,7 +56,29 @@ class FileConformanceTest {
             tests.add(check(name, "identifiers", identifiers(e), identifiers(a)));
             tests.add(check(name, "hidden text", hidden(e), hidden(a)));
         }
+        tests.add(check("evals", "each fact", evals(python), evals(java)));
         return tests.stream();
+    }
+
+    /** Each fact's outcome, whichever reader read it: Python's is named complydoc, Java's complydoc4j. */
+    @SuppressWarnings("unchecked")
+    private static List<Object> evals(Map<String, Object> report) {
+        Map<String, Object> evals = (Map<String, Object>) report.get("evals");
+        List<Object> out = new ArrayList<>();
+        for (Object c : (List<Object>) evals.get("checks")) {
+            Map<String, Object> check = (Map<String, Object>) c;
+            Map<String, Object> kept = new LinkedHashMap<>();
+            for (String key : List.of("fact", "document", "kind", "label")) {
+                kept.put(key, check.get(key));
+            }
+            for (String key : List.of("found", "scores", "pages", "documents", "nearest")) {
+                Map<String, Object> byReader = (Map<String, Object>) check.get(key);
+                kept.put(key, byReader == null || byReader.isEmpty() ? null : byReader.values().iterator().next());
+            }
+            out.add(kept);
+        }
+        out.add(evals.get("error"));
+        return out;
     }
 
     private static DynamicTest check(String name, String part, Object expected, Object actual) {

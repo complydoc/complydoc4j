@@ -1,6 +1,6 @@
 {
   "aggregate": {
-    "analyse_seconds": 0.001,
+    "analyse_seconds": 0.0,
     "annual_text_usd": null,
     "annual_vision_usd": null,
     "categories_not_scanned": {
@@ -2202,7 +2202,7 @@
       },
       "sha256": "74321dca5f22bad9193162ed05a0e481bca2d0c2a00a045c01a848f78d499c33",
       "timing": {
-        "analyse_seconds": 0.001,
+        "analyse_seconds": 0.0,
         "read_seconds": 0.0,
         "scan_seconds": 0.001,
         "seconds_per_page": 0.002,
@@ -2605,18 +2605,18 @@
     "config_dir": "/private/tmp/claude-501/-Users-duarte--herdr-worktrees-complydoc-feature-java-version-for-langchain4j-and-quarkus-same-re/18e1a542-9b5c-41c3-afcc-25e1caf63213/scratchpad/mask-fix/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "main",
-      "commit": "61caf53a21c448d398878209d53a74d76c2716c2",
+      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
+      "commit": "c4f02f8b79650bb8e8289d60a8b36f9498b2a6b1",
       "dirty": true,
-      "repository": "github.com/complydoc/complydoc4j",
+      "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
     },
     "documents_read_after_worker_failure": 0,
-    "duration_seconds": 0.001,
+    "duration_seconds": 0.0,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T20:04:32+00:00",
+    "finished_at": "2026-11-10T20:06:10+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2632,7 +2632,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T20:04:32+00:00",
+    "started_at": "2026-11-10T20:06:10+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.11",
@@ -2685,9 +2685,9 @@
       "pypdf": "6.21.4"
     },
     "name": "invoice_en",
-    "overhead_seconds": 0.069,
+    "overhead_seconds": 0.067,
     "scan": "patterns",
-    "seconds": 0.001,
+    "seconds": 0.0,
     "stages": [
       {
         "characters_in": 268,
@@ -2880,9 +2880,9 @@
           }
         ],
         "ids": [
-          "0cab7a9e-f0d6-4281-9928-acb4ac791df6",
-          "8609610a-77ec-4039-98af-3c5b716abc40",
-          "66eb23b9-be58-4ddc-af33-3b86db91e01f"
+          "d3d041f3-08b4-4cff-99bf-320be298cb16",
+          "43bb1740-ec8b-4a76-b7d6-8f6cf512d897",
+          "6b2d001f-d774-446a-8e42-78bbf2468161"
         ],
         "index": 1,
         "kind": "store",
@@ -2928,7 +2928,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0004,
+        "seconds": 0.0002,
         "sources": [
           "invoice_en.txt"
         ],

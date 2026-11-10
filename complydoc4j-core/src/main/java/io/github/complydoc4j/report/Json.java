@@ -190,7 +190,16 @@ public final class Json {
         if (d == 0) {
             return 1 / d < 0 ? "-0.0" : "0.0";
         }
-        BigDecimal exact = new BigDecimal(Double.toString(d)).stripTrailingZeros();
+        // The fewest significant digits that read back as the same double, as Python's repr
+        // finds them. Double.toString finds them too from Java 19 on, not always before.
+        BigDecimal exact = null;
+        for (int precision = 1; precision <= 17; precision++) {
+            BigDecimal candidate = new BigDecimal(d).round(new java.math.MathContext(precision));
+            if (candidate.doubleValue() == d) {
+                exact = candidate.stripTrailingZeros();
+                break;
+            }
+        }
         String digits = exact.unscaledValue().abs().toString();
         int exponent = digits.length() - 1 - exact.scale();
         String sign = d < 0 ? "-" : "";
