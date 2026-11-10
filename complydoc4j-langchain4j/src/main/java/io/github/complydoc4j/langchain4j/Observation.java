@@ -142,7 +142,7 @@ public final class Observation implements AutoCloseable {
 
     /** A few lines on what each stage did. */
     public List<String> summary() {
-        return TraceBuilder.summary(this, report, error, path);
+        return Summary.lines(name, report, error, path);
     }
 
     @Override
@@ -153,7 +153,7 @@ public final class Observation implements AutoCloseable {
         open = false;
         seconds = (System.nanoTime() - startedNanos) / 1e9;
         try {
-            report = new TraceBuilder(this, seconds, null).build();
+            report = TraceReport.of(this, seconds);
             if (options.out() != null) {
                 path = write(report, options.out());
             }

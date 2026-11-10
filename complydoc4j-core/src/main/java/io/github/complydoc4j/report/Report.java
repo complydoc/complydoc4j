@@ -89,6 +89,16 @@ public record Report(
                     "Java " + System.getProperty("java.version"), null, target, List.of(), List.of(), 1, null, null,
                     null, false, "summary", 0, null, contentSentTo, 0, 0, null, null, 0);
         }
+
+        /** This run, saying a different set of components ran. */
+        public Run withComponents(List<String> components) {
+            return new Run(toolVersion, schemaVersion, startedAt, finishedAt, durationSeconds, target, components,
+                    configDir, configDigest, offlineGuard, revealUsed, pageImagesUsed, extractedTextUsed,
+                    ocrCompareUsed, ocrRequested, ocrAvailable, nerAvailable, pythonVersion, monthlyVolume, extractor,
+                    compareExtractors, compareEngines, jobs, timeoutSeconds, sampledFrom, sampleSize, passwordUsed,
+                    reportDetail, documentsReadAfterWorkerFailure, context, contentSentTo, classifierMissedWorkers,
+                    classifierCalls, verifyModel, verifyScope, classifierFailures);
+        }
     }
 
     public record Masking(int revealTailChars, String maskChar, List<String> neverReveal) {}
