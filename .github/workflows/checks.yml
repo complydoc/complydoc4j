@@ -1,0 +1,51 @@
+name: checks
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build and tests (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 17 is what LangChain4j requires; 25 is the newest LTS.
+        java: [17, 21, 25]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - run: mvn --batch-mode verify
+
+  python-moved:
+    # The golden data is the Python package's answers at one moment. This writes it again
+    # from complydoc's main branch and runs the suite on that, so a change on the Python
+    # side that the Java version has not followed fails here rather than in a report.
+    name: conformance against complydoc main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: complydoc/complydoc
+          path: complydoc
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - run: scripts/update-golden.sh complydoc
+      - run: cp complydoc4j-conformance/src/test/resources/golden/config/*.yaml complydoc4j-core/src/main/resources/io/github/complydoc4j/config/
+      - run: mvn --batch-mode verify
+      - run: git status --short

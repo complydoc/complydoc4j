@@ -1,0 +1,680 @@
+# Personal and financial identifier detection.
+#
+# Categories carry a `region`. GDPR covers the EU and, in its retained form, the
+# UK; the US and other identifiers here fall under their own regimes. Nothing in
+# this file assumes a single jurisdiction.
+#
+# Values are masked by default. `--reveal` prints them in full and the report
+# records that it was used. Categories under masking.never_reveal stay masked
+# even with --reveal.
+#
+# `patterns` are distinctive enough to report on their own.
+# `context_patterns` are too generic to stand alone (a bare run of digits) and
+# are only reported when one of `context_terms` appears within
+# `context_window_chars` characters.
+# `validators` are checksum or format functions applied after the regex matches;
+# a match that fails its validators is discarded.
+
+schema_version: 1
+
+masking:
+  reveal_tail_chars: 4
+  mask_char: "•"
+  never_reveal:
+    # Masked even with --reveal.
+    - card_number
+    - ni_number
+
+categories:
+
+  ni_number:
+    enabled: true
+    label: National Insurance number
+    region: UK
+    detector: regex
+    severity: high
+    patterns:
+      - '\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]\s?\d{2}\s?\d{2}\s?\d{2}\s?[A-D]\b'
+    validators: [ni_prefix]
+    context_terms: ["national insurance", "ni number", "nino", "ni no"]
+    gdpr_note: >
+      A direct identifier under UK data protection law. Uniquely identifies an
+      individual and is routinely treated as high risk in a breach assessment.
+
+  sort_code:
+    enabled: true
+    label: UK sort code
+    region: UK
+    detector: regex
+    severity: high
+    patterns:
+      - '\b\d{2}-\d{2}-\d{2}\b'
+    context_patterns:
+      - '\b\d{6}\b'
+      # OCR renders a sort code spaced rather than hyphenated. It goes here
+      # rather than in `patterns` so it still needs its label nearby: three
+      # pairs of digits on their own are a date, a score or a part number.
+      - '\b\d{2}[ ]\d{2}[ ]\d{2}\b'
+    validators: [sort_code]
+    context_terms: ["sort code", "sortcode", "sort-code", "branch code"]
+    gdpr_note: >
+      Financial identifier. On its own it identifies a bank branch; combined with
+      an account number it enables direct debit fraud.
+
+  bank_account_number:
+    enabled: true
+    label: UK bank account number
+    region: UK
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{8}\b'
+    context_terms:
+      ["account number", "account no", "acct no", "a/c", "bank account", "account:"]
+    gdpr_note: >
+      Financial identifier. Eight bare digits are far too common to report without
+      a nearby label, so an unlabelled account number will not be found.
+
+  iban:
+    enabled: true
+    label: IBAN
+    region: international
+    detector: regex
+    severity: high
+    patterns:
+      - '\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{4}){2,7}(?:[ ]?[A-Z0-9]{1,4})?\b'
+    validators: [iban_mod97]
+    context_terms: ["iban", "international bank account"]
+    gdpr_note: >
+      Financial identifier, validated here with the ISO 13616 mod-97 checksum, so
+      false positives are rare.
+
+  card_number:
+    enabled: true
+    label: Payment card number
+    region: international
+    detector: regex
+    severity: high
+    patterns:
+      - '\b(?:\d[ -]?){12,18}\d\b'
+    validators: [luhn, card_issuer, card_grouping]
+    context_terms: ["card", "visa", "mastercard", "amex", "pan", "card number"]
+    gdpr_note: >
+      Payment card data. Validated with the Luhn checksum and the issuing
+      network's prefix and length. Storing this in
+      unencrypted documents is a PCI DSS problem as well as a data protection one.
+
+  uk_postcode:
+    enabled: true
+    label: UK postcode
+    region: UK
+    detector: regex
+    severity: medium
+    patterns:
+      - '\b(?-i:[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})\b(?![-/]\w)'
+    validators: [uk_postcode]
+    context_terms: ["postcode", "post code", "address"]
+    gdpr_note: >
+      A full postcode narrows location to a handful of properties and is treated
+      as personal data when combined with any other identifier.
+
+  street_address:
+    enabled: true
+    label: Street address
+    region: international
+    detector: regex
+    severity: medium
+    patterns:
+      # English: 12 High Street
+      - '\b\d+[A-Za-z]?[ ,]+(?-i:(?:[A-Z][A-Za-z''-]+[ ]){1,4}(?:Road|Rd|Street|St|Avenue|Ave|Lane|Ln|Close|Drive|Dr|Way|Court|Ct|Place|Pl|Crescent|Terrace|Gardens|Grove|Hill|Park|Square|Sq))\b'
+      # Portuguese, Spanish, Catalan, Italian: Rua Augusta, 12 / Calle Mayor 5
+      - '\b(?-i:(?:Rua|Avenida|Travessa|Largo|Calle|Avda\.|Paseo|Plaza|Carrer|Via|Viale|Piazza|Corso)\s+(?:[A-ZÀ-Ý][\wÀ-ÿ''’.-]*\s?){1,5}),?\s*(?:n\.?\s?[ºo°]?\s*)?\d{1,4}[A-Za-z]?\b'
+      # The same street words in lower case, as Italian and Portuguese addresses are often
+      # written, count only with a postal code after the number: "via" is also a word.
+      - '\b(?-i:rua|avenida|calle|via|viale|piazza|corso)\s+(?:[\wÀ-ÿ''’.-]+\s?){1,5},?\s*\d{1,4}[A-Za-z]?\s*,\s*\d{4,5}(?:-\d{3})?\b'
+      # French: 12 rue de la Paix
+      - '\b\d{1,4}(?:\s?(?:bis|ter))?,?\s+(?:rue|avenue|boulevard|place|chemin|allée|impasse|quai)\s+(?:[\wÀ-ÿ''’-]+\s?){1,5}'
+      # German, Dutch: Hauptstraße 5 / Kerkstraat 12
+      - '\b[\wÀ-ÿ-]+(?:straße|strasse|weg|gasse|allee|platz|straat|laan|plein|gracht)\s+\d{1,4}[a-zA-Z]?\b'
+    context_terms: ["address", "registered office", "correspondence", "morada", "dirección", "adresse", "anschrift", "adres", "indirizzo"]
+    gdpr_note: >
+      Detected by house-number-and-street-word heuristics for English, Portuguese,
+      Spanish, Italian, French, German and Dutch. It will miss flats, named houses
+      and addresses split across lines.
+
+  email_address:
+    enabled: true
+    label: Email address
+    region: international
+    detector: regex
+    severity: medium
+    patterns:
+      - '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+    gdpr_note: >
+      Personal data whenever it identifies an individual, including
+      firstname.lastname@ addresses at a corporate domain.
+
+  phone_number:
+    enabled: true
+    label: Phone number
+    region: UK
+    detector: regex
+    severity: medium
+    patterns:
+      - '(?:\+44[ ]?|\b0)(?:\d[ -]?){9,10}\b'
+    validators: [uk_phone]
+    context_terms: ["tel", "phone", "mobile", "contact"]
+    gdpr_note: >
+      Personal data when tied to an individual. UK formats; numbers with another
+      country code are reported as international phone numbers.
+
+  date_of_birth:
+    enabled: true
+    label: Date of birth
+    region: international
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{1,2}[/.-]\d{1,2}[/.-](?:19|20)\d{2}\b'
+      - '\b\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(?:19|20)\d{2}\b'
+      - '\b(?:19|20)\d{2}-\d{2}-\d{2}\b'
+    validators: [plausible_dob]
+    context_terms: ["date of birth", "dob", "d.o.b", "born", "birth date", "birthdate", "data de nascimento", "nascido", "nascida", "fecha de nacimiento", "nacido", "nacida", "date de naissance", "né le", "née le", "geburtsdatum", "geboren", "data di nascita", "nato il", "nata il", "geboortedatum", "födelsedatum", "fødselsdato", "data urodzenia"]
+    gdpr_note: >
+      Special-risk identifier in combination with a name. Only dates near an
+      explicit birth-date label are reported, so an unlabelled DOB is missed.
+
+  vat_number:
+    enabled: true
+    label: UK VAT number
+    region: UK
+    detector: regex
+    severity: low
+    patterns:
+      - '\bGB[ ]?\d{3}[ ]?\d{4}[ ]?\d{2}(?:[ ]?\d{3})?\b'
+    validators: [vat_mod97]
+    context_terms: ["vat", "vat no", "vat number", "vat reg"]
+    gdpr_note: >
+      Business identifier. Personal data when the business is a sole trader.
+
+  utr:
+    enabled: true
+    label: Unique Taxpayer Reference
+    region: UK
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{10}\b'
+    context_terms: ["utr", "unique taxpayer", "taxpayer reference", "self assessment"]
+    gdpr_note: >
+      HMRC taxpayer identifier. Ten bare digits are too common to report without a
+      nearby label.
+
+  person_name:
+    enabled: true
+    label: Person name
+    region: international
+    detector: token_classifier
+    min_confidence: 0.9
+    severity: medium
+    # `name` is an installed spaCy package or a path to a saved pipeline. See the
+    # "Name detection models" guide for drop_short_acronyms, drop_multiline,
+    # drop_numbered_headings, spans_key and by_language.
+    model:
+      name: Babelscape/wikineural-multilingual-ner
+      entity_labels: [PER]
+    # Tried when the model above is not installed, so a plain install
+    # still finds names. It reads English only: see Detection accuracy.
+    fallback:
+      - detector: ner
+        min_confidence: 0.0
+        model:
+          name: en_core_web_sm
+          entity_labels: [PERSON]
+    # Names a rule can find without the model, and whether or not the model agrees:
+    # the name after its label at the start of a line, and the one after "signed by".
+    # `value` is the name; `label` is what it was found by. The name itself is read
+    # with its capitals, though the labels are not.
+    patterns:
+      - '(?m)^[ \t]*(?P<label>(?:full |employee |customer |client |patient |contact |account holder |policyholder |insured |beneficiary )?name|nome(?: completo)?|nombre|nom)[ \t]*:[ \t]*(?P<value>(?-i:[A-ZÀ-Þ][a-zà-ÿ''’-]+(?:[ \t]+(?:[A-ZÀ-Þ]\.|d[aeo]s?|van|von|der|la|le|[A-ZÀ-Þ][a-zà-ÿ''’-]+)){1,4}))'
+      - '\b(?P<label>approved|signed|prepared|reviewed|authori[sz]ed|witnessed) by[ \t]+(?P<value>(?-i:[A-ZÀ-Þ][a-zà-ÿ''’-]+(?:[ \t]+(?:[A-ZÀ-Þ]\.|d[aeo]s?|van|von|der|[A-ZÀ-Þ][a-zà-ÿ''’-]+)){1,3}))'
+    gdpr_note: >
+      Found by a local statistical model, and by its label where it has one. Expect
+      misses and false positives; the count indicates scale.
+
+  organisation_name:
+    enabled: true
+    label: Organisation name
+    region: international
+    detector: token_classifier
+    min_confidence: 0.9
+    severity: low
+    model:
+      name: Babelscape/wikineural-multilingual-ner
+      entity_labels: [ORG]
+    # Tried when the model above is not installed, so a plain install
+    # still finds names. It reads English only: see Detection accuracy.
+    fallback:
+      - detector: ner
+        min_confidence: 0.0
+        model:
+          name: en_core_web_sm
+          entity_labels: [ORG]
+    # Names a rule can find without the model: one that ends in a company form, such
+    # as "Acme Holdings Ltd" or "HARBOUR LOGISTICS LTD". The form is read with its
+    # capitals, so "the limited edition" is no company; a name does not start with a
+    # word such as "The", and ends at its first company form.
+    patterns:
+      - '(?<![\w&])(?P<value>(?-i:(?!(?:The|See|We|An|A|In|On|At|For|To|Of|Our|Your|This|That|These|Those|It|As|By|If|From|With|And|Or|But)[ \t])[A-ZÀ-Þ][\w&''’-]*(?:[ \t]+(?:&|and|of|de|da|do|(?!(?:Ltd|LTD|Limited|LIMITED|Llc|LLC|Llp|LLP|Inc|INC|Incorporated|INCORPORATED|Corp|CORP|Corporation|CORPORATION|Pty|PTY|Lda|LDA|Unipessoal|UNIPESSOAL|Sarl|SARL|GmbH|GMBH|plc|PLC|S\.A\.|B\.V\.|S\.L\.|SA|AG|BV|NV)(?![\w]))[A-ZÀ-Þ0-9][\w&''’-]*)){0,4}[ \t]+(?:Ltd|LTD|Limited|LIMITED|Llc|LLC|Llp|LLP|Inc|INC|Incorporated|INCORPORATED|Corp|CORP|Corporation|CORPORATION|Pty|PTY|Lda|LDA|Unipessoal|UNIPESSOAL|Sarl|SARL|GmbH|GMBH|plc|PLC|S\.A\.|B\.V\.|S\.L\.|SA|AG|BV|NV)))(?![\w])\.?'
+    gdpr_note: >
+      Not personal data on its own. Reported because organisation names are often
+      what makes an otherwise anonymous document re-identifiable.
+
+  # ---------------------------------------------------------------------
+  # Other jurisdictions. A UK finance team routinely holds records for
+  # suppliers, staff and customers elsewhere, and an identifier that is not
+  # British is not therefore harmless. Each of these carries a checksum, so
+  # enabling them all does not flood the report with false positives.
+  # ---------------------------------------------------------------------
+
+  us_ssn:
+    enabled: true
+    label: US Social Security number
+    region: US
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{3}-\d{2}-\d{4}\b'
+      - '\b\d{9}\b'
+    validators: [us_ssn]
+    context_terms: ["ssn", "social security", "soc sec"]
+    gdpr_note: >
+      Direct identifier. Validated against the Social Security Administration's
+      published exclusions, so runs like 000-xx-xxxx are discarded.
+
+  us_ein:
+    enabled: true
+    label: US Employer Identification Number
+    region: US
+    detector: regex
+    severity: medium
+    context_patterns:
+      - '\b\d{2}-\d{7}\b'
+    validators: [us_ein]
+    context_terms: ["ein", "employer identification", "federal tax id", "fein"]
+    gdpr_note: >
+      Business tax identifier. Carries no checksum, so only the shape and a valid
+      campus prefix are checked; a nearby label is required.
+
+  us_routing_number:
+    enabled: true
+    label: US bank routing number
+    region: US
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{9}\b'
+    validators: [aba_routing]
+    context_terms: ["routing", "aba", "wire", "ach"]
+    gdpr_note: >
+      Financial identifier, validated with the ABA checksum. With an account
+      number it is enough to originate a debit.
+
+  ie_pps:
+    enabled: true
+    label: Irish PPS number
+    region: IE
+    detector: regex
+    severity: high
+    patterns:
+      - '\b\d{7}[A-W][A-IW]?\b'
+    validators: [ie_pps]
+    context_terms: ["pps", "ppsn", "personal public service"]
+    gdpr_note: >
+      Direct identifier under Irish data protection law, validated with its
+      check letter.
+
+  nl_bsn:
+    enabled: true
+    label: Dutch BSN
+    region: NL
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{9}\b'
+    validators: [nl_bsn]
+    context_terms: ["bsn", "burgerservicenummer", "sofinummer"]
+    gdpr_note: >
+      Direct identifier, validated with the eleven-proof. Dutch law restricts who
+      may process it at all.
+
+  pt_nif:
+    enabled: true
+    label: Portuguese NIF
+    region: PT
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{9}\b'
+    validators: [pt_nif]
+    context_terms: ["nif", "contribuinte", "número fiscal", "numero fiscal"]
+    gdpr_note: >
+      Tax identifier for individuals and companies, validated with its mod-11
+      check digit.
+
+  es_dni:
+    enabled: true
+    label: Spanish DNI or NIE
+    region: ES
+    detector: regex
+    severity: high
+    patterns:
+      - '\b(?-i:[XYZ]?\d{7,8}[-]?[A-HJ-NP-TV-Z])\b'
+    validators: [es_dni]
+    context_terms: ["dni", "nie", "documento nacional"]
+    gdpr_note: >
+      Direct identifier, validated by the letter derived from the number mod 23.
+
+  fr_nir:
+    enabled: true
+    label: French social security number
+    region: FR
+    detector: regex
+    severity: high
+    patterns:
+      - '\b[12]\s?\d{2}\s?\d{2}\s?\d{2,3}\s?\d{2,3}\s?\d{3}\s?\d{2}\b'
+    validators: [fr_nir]
+    context_terms: ["nir", "sécurité sociale", "securite sociale", "insee"]
+    gdpr_note: >
+      Direct identifier encoding sex, birth date and birthplace, validated with
+      its mod-97 key. Treated as especially sensitive in France.
+
+  de_steuer_id:
+    enabled: true
+    label: German tax identification number
+    region: DE
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{11}\b'
+    validators: [de_steuer_id]
+    context_terms: ["steuer", "steuer-id", "steueridentifikationsnummer", "idnr"]
+    gdpr_note: >
+      Lifelong personal tax identifier, validated with its ISO 7064 check digit
+      and its distinctive repeated-digit rule.
+
+  eu_vat_number:
+    enabled: true
+    label: EU VAT number
+    region: EU
+    detector: regex
+    severity: low
+    patterns:
+      - '\b(?:AT|BE|BG|CY|CZ|DE|DK|EE|EL|ES|FI|FR|HR|HU|IE|IT|LT|LU|LV|MT|NL|PL|PT|RO|SE|SI|SK)[ ]?[A-Z0-9]{8,12}\b'
+    validators: [eu_vat]
+    context_terms: ["vat", "btw", "tva", "ust", "iva", "moms"]
+    gdpr_note: >
+      Business identifier, checked against the per-country length rules. Personal
+      data only where the business is a sole trader.
+
+  # ---------------------------------------------------------------------
+  # Phone numbers and postcodes outside the UK.
+  # ---------------------------------------------------------------------
+
+  international_phone:
+    enabled: true
+    label: International phone number
+    region: international
+    detector: regex
+    severity: medium
+    patterns:
+      - '\+(?!44)[1-9]\d{0,2}(?:[ .-]?\(?\d{1,4}\)?){2,5}\b'
+    validators: [e164_phone]
+    gdpr_note: >
+      A number written with a country code other than +44, 8 to 15 digits. Numbers
+      written without a country code are found only for the UK and North America.
+
+  us_phone:
+    enabled: true
+    label: North American phone number
+    region: US
+    detector: regex
+    severity: medium
+    context_patterns:
+      - '\(?\b[2-9]\d{2}\)?[ .-]\d{3}[ .-]\d{4}\b'
+    validators: [nanp_phone]
+    context_terms: ["phone", "tel", "mobile", "cell", "fax", "call"]
+    gdpr_note: >
+      US and Canadian numbers without a country code. Ten digits are common in
+      business documents, so a nearby label is required.
+
+  us_zip_code:
+    enabled: true
+    label: US ZIP code
+    region: US
+    detector: regex
+    severity: medium
+    context_patterns:
+      - '\b\d{5}(?:-\d{4})?\b'
+    context_terms: ["zip code", "zip:", "zip ", "zipcode"]
+    gdpr_note: >
+      Narrows location when combined with other identifiers. Five digits are too
+      common to report without a nearby label.
+
+  ca_postal_code:
+    enabled: true
+    label: Canadian postal code
+    region: CA
+    detector: regex
+    severity: medium
+    patterns:
+      - '\b(?-i:[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d)\b'
+    gdpr_note: >
+      A letter-digit pattern distinctive enough to report without a label.
+
+  eu_postal_code:
+    enabled: true
+    label: Postal code
+    region: EU
+    detector: regex
+    severity: medium
+    context_patterns:
+      - '\b\d{5}\b'
+      - '\b\d{4}-\d{3}\b'
+      - '\b[1-9]\d{3}\s?[A-Z]{2}\b'
+    context_terms: ["postleitzahl", "plz", "code postal", "código postal", "codigo postal", "codice postale", "postcode", "postal code", "cod. postal"]
+    gdpr_note: >
+      German, French, Spanish and Italian five-digit codes, Portuguese NNNN-NNN and
+      Dutch 1234 AB codes. Reported only near a postal-code label.
+
+  br_cep:
+    enabled: true
+    label: Brazilian CEP
+    region: BR
+    detector: regex
+    severity: medium
+    context_patterns:
+      - '\b\d{5}-\d{3}\b'
+    context_terms: ["cep:", "cep ", "código de endereçamento"]
+    gdpr_note: >
+      Brazilian postal code. Reported only near a CEP label.
+
+  # ---------------------------------------------------------------------
+  # National identifiers outside the UK, US and the countries above.
+  # ---------------------------------------------------------------------
+
+  it_codice_fiscale:
+    enabled: true
+    label: Italian codice fiscale
+    region: IT
+    detector: regex
+    severity: high
+    patterns:
+      - '\b[A-Z]{6}\d{2}[A-EHLMPR-T]\d{2}[A-Z]\d{3}[A-Z]\b'
+    validators: [it_codice_fiscale]
+    context_terms: ["codice fiscale", "c.f.", "cf"]
+    gdpr_note: >
+      Personal tax code encoding name, birth date and birthplace, validated with
+      its check letter.
+
+  be_national_number:
+    enabled: true
+    label: Belgian national register number
+    region: BE
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{2}\.?\d{2}\.?\d{2}[-. ]?\d{3}\.?\d{2}\b'
+    validators: [be_national_number]
+    context_terms: ["rijksregisternummer", "rijksregister", "numéro national", "numero national", "national number", "registre national"]
+    gdpr_note: >
+      Direct identifier encoding birth date and sex, validated with its mod-97 key.
+
+  pl_pesel:
+    enabled: true
+    label: Polish PESEL
+    region: PL
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{11}\b'
+    validators: [pl_pesel]
+    context_terms: ["pesel"]
+    gdpr_note: >
+      Direct identifier encoding birth date and sex, validated with its check digit.
+
+  se_personnummer:
+    enabled: true
+    label: Swedish personal identity number
+    region: SE
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b(?:19|20)?\d{6}[-+]?\d{4}\b'
+    validators: [se_personnummer]
+    context_terms: ["personnummer", "samordningsnummer", "personal identity number"]
+    gdpr_note: >
+      Direct identifier, validated as a date with a Luhn check digit.
+
+  dk_cpr:
+    enabled: true
+    label: Danish CPR number
+    region: DK
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{6}-?\d{4}\b'
+    validators: [dk_cpr]
+    context_terms: ["cpr", "personnummer", "cpr-nummer"]
+    gdpr_note: >
+      Direct identifier encoding birth date. It has no checksum, so only the date is
+      checked and a nearby label is required.
+
+  no_fnr:
+    enabled: true
+    label: Norwegian identity number
+    region: 'NO'
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{6}[ .-]?\d{5}\b'
+    validators: [no_fnr]
+    context_terms: ["fødselsnummer", "fodselsnummer", "fnr", "personnummer", "d-nummer"]
+    gdpr_note: >
+      Direct identifier encoding birth date, validated with its two mod-11 check digits.
+
+
+  ch_ahv:
+    enabled: true
+    label: Swiss AHV number
+    region: CH
+    detector: regex
+    severity: high
+    patterns:
+      - '\b756\.?\d{4}\.?\d{4}\.?\d{2}\b'
+    validators: [ch_ahv]
+    context_terms: ["ahv", "avs", "social security"]
+    gdpr_note: >
+      Swiss social security number, validated with its EAN-13 check digit.
+
+  br_cpf:
+    enabled: true
+    label: Brazilian CPF
+    region: BR
+    detector: regex
+    severity: high
+    patterns:
+      - '\b\d{3}\.\d{3}\.\d{3}-\d{2}\b'
+    context_patterns:
+      - '\b\d{11}\b'
+    validators: [br_cpf]
+    context_terms: ["cpf", "cadastro de pessoas"]
+    gdpr_note: >
+      Individual taxpayer number, validated with its two check digits.
+
+  br_cnpj:
+    enabled: true
+    label: Brazilian CNPJ
+    region: BR
+    detector: regex
+    severity: low
+    patterns:
+      - '\b\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}\b'
+    validators: [br_cnpj]
+    context_terms: ["cnpj"]
+    gdpr_note: >
+      Company registration number, validated with its two check digits. Business
+      identifier.
+
+  in_aadhaar:
+    enabled: true
+    label: Indian Aadhaar number
+    region: IN
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}\b'
+    validators: [in_aadhaar]
+    context_terms: ["aadhaar", "aadhar", "uidai"]
+    gdpr_note: >
+      Biometric-linked national identifier, validated with its Verhoeff check digit.
+
+  in_pan:
+    enabled: true
+    label: Indian PAN
+    region: IN
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b[A-Z]{3}[ABCFGHJLPT][A-Z]\d{4}[A-Z]\b'
+    validators: [in_pan]
+    context_terms: ["permanent account number", "pan no", "pan:", "pan number", "income tax"]
+    gdpr_note: >
+      Tax identifier. It has no checksum, so the holder-type letter is checked and a
+      nearby label is required.
+
+  ca_sin:
+    enabled: true
+    label: Canadian Social Insurance Number
+    region: CA
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{3}[ -]?\d{3}[ -]?\d{3}\b'
+    validators: [ca_sin]
+    context_terms: ["social insurance", "s.i.n", "sin:", "sin no", "assurance sociale"]
+    gdpr_note: >
+      Direct identifier, validated with the Luhn checksum.
+
+  au_tfn:
+    enabled: true
+    label: Australian Tax File Number
+    region: AU
+    detector: regex
+    severity: high
+    context_patterns:
+      - '\b\d{3}[ ]?\d{3}[ ]?\d{3}\b'
+    validators: [au_tfn]
+    context_terms: ["tfn", "tax file number"]
+    gdpr_note: >
+      Tax identifier, validated with its weighted mod-11 check.

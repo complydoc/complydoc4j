@@ -1,0 +1,332 @@
+[
+  {
+    "text": "Ficha de cliente / Kundendaten\n\nNome: Ana Silva\nNIF: 123456789\nIBAN: PT50 0002 0123 1234 5678 9015 4\nDNI: 12345678Z\nSteuer-ID: 86095742719\nNIR: 1 84 12 76 451 089 46\nBSN: 111222333\nPESEL: 44051401359\nEmail: ana.silva@example.pt\nTelefone: +351 912 345 678\nVAT: DE123456789\nSSN: 123-45-6789\n\nOs dados acima são confidenciais.\n",
+    "matches": [
+      {
+        "category": "pt_nif",
+        "line": 4,
+        "column": 5,
+        "length": 9,
+        "masked": "•••••6789",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "pt_nif"
+        ],
+        "context_term": "nif",
+        "fingerprint": "id-672afcfc3ecca3b3"
+      },
+      {
+        "category": "iban",
+        "line": 5,
+        "column": 6,
+        "length": 31,
+        "masked": "•••• •••• •••• •••• •••• •015 4",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "iban_mod97"
+        ],
+        "context_term": null,
+        "fingerprint": "id-0e3f9e9fa09d2898"
+      },
+      {
+        "category": "es_dni",
+        "line": 6,
+        "column": 5,
+        "length": 9,
+        "masked": "•••••678Z",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "es_dni"
+        ],
+        "context_term": null,
+        "fingerprint": "id-896204319574a309"
+      },
+      {
+        "category": "de_steuer_id",
+        "line": 7,
+        "column": 11,
+        "length": 11,
+        "masked": "•••••••2719",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "de_steuer_id"
+        ],
+        "context_term": "steuer",
+        "fingerprint": "id-1e4e7fe5209d721e"
+      },
+      {
+        "category": "fr_nir",
+        "line": 8,
+        "column": 5,
+        "length": 21,
+        "masked": "• •• •• •• ••• •89 46",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "fr_nir"
+        ],
+        "context_term": null,
+        "fingerprint": "id-4a0f717baf417c15"
+      },
+      {
+        "category": "nl_bsn",
+        "line": 9,
+        "column": 5,
+        "length": 9,
+        "masked": "•••••2333",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "nl_bsn"
+        ],
+        "context_term": "bsn",
+        "fingerprint": "id-79263ded7200208d"
+      },
+      {
+        "category": "pl_pesel",
+        "line": 10,
+        "column": 7,
+        "length": 11,
+        "masked": "•••••••1359",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "pl_pesel"
+        ],
+        "context_term": "pesel",
+        "fingerprint": "id-55b73b4554a5b261"
+      },
+      {
+        "category": "email_address",
+        "line": 11,
+        "column": 7,
+        "length": 20,
+        "masked": "•••.•••••@•••••le.pt",
+        "evidence": "pattern",
+        "confidence": 1.0,
+        "validators_passed": [],
+        "context_term": null,
+        "fingerprint": "id-08485c0be77fe430"
+      },
+      {
+        "category": "international_phone",
+        "line": 12,
+        "column": 10,
+        "length": 16,
+        "masked": "+••• ••• ••5 678",
+        "evidence": "pattern",
+        "confidence": 1.0,
+        "validators_passed": [
+          "e164_phone"
+        ],
+        "context_term": null,
+        "fingerprint": "id-f102e6685d124470"
+      },
+      {
+        "category": "eu_vat_number",
+        "line": 13,
+        "column": 5,
+        "length": 11,
+        "masked": "•••••••6789",
+        "evidence": "corroborated",
+        "confidence": 1.0,
+        "validators_passed": [
+          "eu_vat"
+        ],
+        "context_term": null,
+        "fingerprint": "id-5daead98f2de6806"
+      },
+      {
+        "category": "us_ssn",
+        "line": 14,
+        "column": 5,
+        "length": 11,
+        "masked": "•••-••-6789",
+        "evidence": "corroborated",
+        "confidence": 0.8,
+        "validators_passed": [
+          "us_ssn"
+        ],
+        "context_term": "ssn",
+        "fingerprint": "id-71465414b38aa8eb"
+      }
+    ],
+    "masked": "Ficha de cliente / Kundendaten\n\nNome: Ana Silva\nNIF: •••••6789\nIBAN: •••• •••• •••• •••• •••• •015 4\nDNI: •••••678Z\nSteuer-ID: •••••••2719\nNIR: • •• •• •• ••• •89 46\nBSN: •••••2333\nPESEL: •••••••1359\nEmail: •••.•••••@•••••le.pt\nTelefone: +••• ••• ••5 678\nVAT: •••••••6789\nSSN: •••-••-6789\n\nOs dados acima são confidenciais.\n",
+    "hidden": []
+  },
+  {
+    "text": "Ficha de cliente / Kundendaten",
+    "matches": [],
+    "masked": "Ficha de cliente / Kundendaten",
+    "hidden": []
+  },
+  {
+    "text": "Nome: Ana Silva\nNIF: 123456789\nIBAN: PT50 0002 0123 1234 5678 9015 4\nDNI: 12345678Z\nSteuer-ID: 86095742719\nNIR: 1 84 12 76 451 089 46\nBSN: 111222333\nPESEL: 44051401359\nEmail: ana.silva@example.pt\nTelefone: +351 912 345 678\nVAT: DE123456789\nSSN: 123-45-6789",
+    "matches": [
+      {
+        "category": "pt_nif",
+        "line": 2,
+        "column": 5,
+        "length": 9,
+        "masked": "•••••6789",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "pt_nif"
+        ],
+        "context_term": "nif",
+        "fingerprint": "id-672afcfc3ecca3b3"
+      },
+      {
+        "category": "iban",
+        "line": 3,
+        "column": 6,
+        "length": 31,
+        "masked": "•••• •••• •••• •••• •••• •015 4",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "iban_mod97"
+        ],
+        "context_term": null,
+        "fingerprint": "id-0e3f9e9fa09d2898"
+      },
+      {
+        "category": "es_dni",
+        "line": 4,
+        "column": 5,
+        "length": 9,
+        "masked": "•••••678Z",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "es_dni"
+        ],
+        "context_term": null,
+        "fingerprint": "id-896204319574a309"
+      },
+      {
+        "category": "de_steuer_id",
+        "line": 5,
+        "column": 11,
+        "length": 11,
+        "masked": "•••••••2719",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "de_steuer_id"
+        ],
+        "context_term": "steuer",
+        "fingerprint": "id-1e4e7fe5209d721e"
+      },
+      {
+        "category": "fr_nir",
+        "line": 6,
+        "column": 5,
+        "length": 21,
+        "masked": "• •• •• •• ••• •89 46",
+        "evidence": "confirmed",
+        "confidence": 1.0,
+        "validators_passed": [
+          "fr_nir"
+        ],
+        "context_term": null,
+        "fingerprint": "id-4a0f717baf417c15"
+      },
+      {
+        "category": "nl_bsn",
+        "line": 7,
+        "column": 5,
+        "length": 9,
+        "masked": "•••••2333",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "nl_bsn"
+        ],
+        "context_term": "bsn",
+        "fingerprint": "id-79263ded7200208d"
+      },
+      {
+        "category": "pl_pesel",
+        "line": 8,
+        "column": 7,
+        "length": 11,
+        "masked": "•••••••1359",
+        "evidence": "confirmed",
+        "confidence": 0.8,
+        "validators_passed": [
+          "pl_pesel"
+        ],
+        "context_term": "pesel",
+        "fingerprint": "id-55b73b4554a5b261"
+      },
+      {
+        "category": "email_address",
+        "line": 9,
+        "column": 7,
+        "length": 20,
+        "masked": "•••.•••••@•••••le.pt",
+        "evidence": "pattern",
+        "confidence": 1.0,
+        "validators_passed": [],
+        "context_term": null,
+        "fingerprint": "id-08485c0be77fe430"
+      },
+      {
+        "category": "international_phone",
+        "line": 10,
+        "column": 10,
+        "length": 16,
+        "masked": "+••• ••• ••5 678",
+        "evidence": "pattern",
+        "confidence": 1.0,
+        "validators_passed": [
+          "e164_phone"
+        ],
+        "context_term": null,
+        "fingerprint": "id-f102e6685d124470"
+      },
+      {
+        "category": "eu_vat_number",
+        "line": 11,
+        "column": 5,
+        "length": 11,
+        "masked": "•••••••6789",
+        "evidence": "corroborated",
+        "confidence": 1.0,
+        "validators_passed": [
+          "eu_vat"
+        ],
+        "context_term": null,
+        "fingerprint": "id-5daead98f2de6806"
+      },
+      {
+        "category": "us_ssn",
+        "line": 12,
+        "column": 5,
+        "length": 11,
+        "masked": "•••-••-6789",
+        "evidence": "corroborated",
+        "confidence": 0.8,
+        "validators_passed": [
+          "us_ssn"
+        ],
+        "context_term": "ssn",
+        "fingerprint": "id-71465414b38aa8eb"
+      }
+    ],
+    "masked": "Nome: Ana Silva\nNIF: •••••6789\nIBAN: •••• •••• •••• •••• •••• •015 4\nDNI: •••••678Z\nSteuer-ID: •••••••2719\nNIR: • •• •• •• ••• •89 46\nBSN: •••••2333\nPESEL: •••••••1359\nEmail: •••.•••••@•••••le.pt\nTelefone: +••• ••• ••5 678\nVAT: •••••••6789\nSSN: •••-••-6789",
+    "hidden": []
+  },
+  {
+    "text": "Os dados acima são confidenciais.\n",
+    "matches": [],
+    "masked": "Os dados acima são confidenciais.\n",
+    "hidden": []
+  }
+]
