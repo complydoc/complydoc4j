@@ -4,7 +4,7 @@ Newest first. Releases increment the patch number; the minor number changes for 
 way of using complydoc4j, or for a breaking change to its API. The report it writes
 follows complydoc's report schema, which is versioned separately, as `run.schema_version`.
 
-## [Unreleased]
+## [0.1.0] — 2026-11-11
 
 The first release: complydoc for Java, writing the same report as complydoc 0.7.11
 (schema 27).
