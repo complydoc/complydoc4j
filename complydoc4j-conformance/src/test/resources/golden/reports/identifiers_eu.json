@@ -2741,7 +2741,7 @@
       "sensitive"
     ],
     "config_digest": "e9fa33925e93dd7a",
-    "config_dir": "/private/tmp/claude-501/-Users-duarte--herdr-worktrees-complydoc-feature-java-version-for-langchain4j-and-quarkus-same-re/18e1a542-9b5c-41c3-afcc-25e1caf63213/scratchpad/mask-fix/src/complydoc/config",
+    "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
       "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
