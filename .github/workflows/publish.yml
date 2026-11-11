@@ -1,0 +1,72 @@
+# Upload a release to Maven Central.
+#
+# Runs when a drafted release is published. Pushing a tag builds the jars, attests them and
+# drafts the release; a version on Maven Central cannot be replaced, so publishing is a
+# manual step.
+#
+# The jars are built again from the tag's source, signed and uploaded through the Central
+# Portal. It needs, in the `maven-central` environment:
+#   CENTRAL_USERNAME, CENTRAL_PASSWORD  a Central Portal user token
+#   GPG_PRIVATE_KEY, GPG_PASSPHRASE     the key the jars are signed with
+# Without them the job says so and uploads nothing.
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to upload, for a re-run"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  central:
+    name: upload to Maven Central
+    runs-on: ubuntu-latest
+    # A GitHub environment, so the repository can require a review before this runs and so
+    # the deployment is recorded.
+    environment:
+      name: maven-central
+      url: https://central.sonatype.com/namespace/io.github.complydoc
+    env:
+      CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+      CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    steps:
+      - name: is there a Central Portal token and a key to sign with
+        id: access
+        run: |
+          if [ -n "$CENTRAL_USERNAME" ] && [ -n "$GPG_PASSPHRASE" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
+          else echo "::warning::No Central Portal token or signing key in the maven-central environment: nothing was uploaded."; fi
+      - uses: actions/checkout@v5
+        if: steps.access.outputs.ok
+        with:
+          ref: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+      - uses: actions/setup-java@v5
+        if: steps.access.outputs.ok
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+      - name: the version being uploaded matches the tag
+        if: steps.access.outputs.ok
+        env:
+          TAG: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+        run: |
+          version=$(mvn --batch-mode -q help:evaluate -Dexpression=project.version -DforceStdout)
+          [ "v${version}" = "${TAG}" ] || { echo "::error::version ${version} is not tag ${TAG}"; exit 1; }
+      - name: sign and upload
+        if: steps.access.outputs.ok
+        env:
+          # Where maven-gpg-plugin 3.2 takes the passphrase from.
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn --batch-mode -P release -DskipTests deploy -pl complydoc4j-core,complydoc4j-langchain4j -am

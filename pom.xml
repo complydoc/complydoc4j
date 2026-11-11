@@ -6,7 +6,7 @@
 
   <groupId>io.github.complydoc</groupId>
   <artifactId>complydoc4j</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.0</version>
   <packaging>pom</packaging>
 
   <name>complydoc4j</name>

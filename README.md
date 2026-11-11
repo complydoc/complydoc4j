@@ -21,7 +21,7 @@ Java 17 or later.
 
 complydoc4j isn't on Maven Central yet. Until it is, install it from a clone with
 `mvn install`, then depend on `io.github.complydoc:complydoc4j-langchain4j` (or
-`complydoc4j-core`) at `0.1.0-SNAPSHOT`.
+`complydoc4j-core`) at `0.1.0`.
 
 ## With no framework
 
@@ -102,6 +102,11 @@ To refresh the golden data from a complydoc checkout:
 ```bash
 scripts/update-golden.sh ../complydoc
 ```
+
+## Contributing
+
+Branches, pull requests and releases work as in complydoc. See [CONTRIBUTING.md](CONTRIBUTING.md),
+and [CHANGELOG.md](CHANGELOG.md) for what each release changed.
 
 ## Licence
 

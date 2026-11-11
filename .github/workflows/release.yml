@@ -1,0 +1,117 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build, for a dry run"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify the tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      # A tag that disagrees with the version a report records would put the wrong number
+      # in every report the release writes.
+      - id: version
+        name: the tag matches the version
+        run: |
+          tag="${{ github.event.inputs.tag || github.ref_name }}"
+          version=$(mvn --batch-mode -q help:evaluate -Dexpression=project.version -DforceStdout)
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          if [ "${tag}" != "v${version}" ]; then
+            echo "tag ${tag} does not match version ${version} in pom.xml" >&2
+            exit 1
+          fi
+          grep -q "VERSION = \"${version}\"" complydoc4j-core/src/main/java/io/github/complydoc4j/Complydoc4j.java \
+            || { echo "Complydoc4j.VERSION is not ${version}" >&2; exit 1; }
+          echo "${tag} matches the version"
+      - name: the changelog mentions this version
+        run: |
+          grep -q "^## \[${{ steps.version.outputs.version }}\]" CHANGELOG.md \
+            || { echo "CHANGELOG.md has no entry for ${{ steps.version.outputs.version }}" >&2; exit 1; }
+
+  checks:
+    name: full check suite (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [17, 21, 25]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - run: mvn --batch-mode verify
+
+  build:
+    name: build, attest and draft
+    needs: [verify, checks]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Signing the provenance statement. Nothing here needs a stored key: the certificate
+      # is issued to this workflow's own identity.
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+      # The jars Maven Central gets, sources and javadoc included; signed at publish time.
+      - name: build the jars
+        run: mvn --batch-mode -P release -Dgpg.skip -DskipTests package -pl complydoc4j-core,complydoc4j-langchain4j -am
+      - name: gather them
+        run: |
+          mkdir -p dist
+          cp complydoc4j-core/target/complydoc4j-core-*.jar complydoc4j-langchain4j/target/complydoc4j-langchain4j-*.jar dist/
+          cd dist && sha256sum * > SHA256SUMS && cat SHA256SUMS
+      # Signed, verifiable provenance for the jars, tying each to this commit and workflow.
+      - id: attest
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: dist/*.jar
+      - uses: actions/upload-artifact@v5
+        with:
+          name: complydoc4j-${{ needs.verify.outputs.version }}
+          path: dist/
+      - name: draft the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.attest.outcome }}" = "success" ]; then
+            provenance="Every jar carries signed build provenance. Verify one with:
+
+              gh attestation verify complydoc4j-core-${{ needs.verify.outputs.version }}.jar --repo ${{ github.repository }}"
+          else
+            provenance="Build provenance was not attested: GitHub does not store attestations for private repositories. \`SHA256SUMS\` is in the assets."
+          fi
+          gh release create "${{ github.ref_name }}" dist/* \
+            --title "${{ github.ref_name }}" \
+            --notes "See the changelog for what changed.
+
+          ${provenance}
+
+          Publishing this draft uploads the jars to Maven Central." \
+            --draft
