@@ -19,6 +19,10 @@ runs your policies on it. The rules come from the same files (`sensitive.yaml`,
 
 Java 17 or later.
 
+complydoc4j isn't on Maven Central yet. Until it is, install it from a clone with
+`mvn install`, then depend on `io.github.complydoc:complydoc4j-langchain4j` (or
+`complydoc4j-core`) at `0.1.0-SNAPSHOT`.
+
 ## With no framework
 
 ```java
@@ -57,6 +61,9 @@ at a time: `observation.splitter(...)`, `observation.embeddingModel(...)`,
 Nothing is scanned while the pipeline runs, so the stage timings are the pipeline's own.
 Observing never breaks the pipeline. If complydoc4j itself fails, the failure is reported
 as a warning. If the pipeline throws, the exception is recorded and thrown on.
+
+`samples/langchain4j-ingest` is a runnable ingestion of three documents, with an in-process
+embedding model so nothing leaves the machine.
 
 ## What the Java version leaves out
 

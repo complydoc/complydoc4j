@@ -20,6 +20,18 @@
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <name>Duarte Cardoso</name>
+      <url>https://github.com/duartecaldascardoso</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/complydoc/complydoc4j</url>
+    <connection>scm:git:https://github.com/complydoc/complydoc4j.git</connection>
+  </scm>
+
   <modules>
     <module>complydoc4j-core</module>
     <module>complydoc4j-langchain4j</module>
@@ -104,4 +116,66 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <!--
+      Publishing to Maven Central: mvn -P release deploy. It needs a Central Portal token in
+      ~/.m2/settings.xml as the server `central`, and a GPG key to sign with. The
+      conformance module is not published.
+    -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals><goal>jar-no-fork</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.11.2</version>
+            <configuration>
+              <doclint>none</doclint>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals><goal>jar</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.7</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.8.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <excludeArtifacts>complydoc4j-conformance</excludeArtifacts>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

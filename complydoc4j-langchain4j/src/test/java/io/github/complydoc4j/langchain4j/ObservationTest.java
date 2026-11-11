@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
+import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -107,6 +109,21 @@ class ObservationTest {
             }
         });
         assertEquals("IllegalStateException: quota exceeded", stage(observation.report(), "embed").error());
+    }
+
+    @Test
+    void theFileLangChain4jsLoaderReadIsTheOneCheckedForHiddenText(@TempDir Path folder) throws Exception {
+        Files.writeString(folder.resolve("notes.txt"), "Supplier notes.\n\nPay on receipt.\n");
+        Observation observation = Observation.start("loaded", options(folder.resolve(".complydoc")));
+        try (observation) {
+            List<Document> documents = observation.load("FileSystemDocumentLoader",
+                    () -> FileSystemDocumentLoader.loadDocuments(folder, new TextDocumentParser()));
+            observation.splitter(DocumentSplitters.recursive(200, 0)).splitAll(documents);
+        }
+        Report.Document document = observation.report().documents().get(0);
+        assertEquals("notes.txt", document.relativePath());
+        assertTrue(document.visibilityChecked(), document.visibilityNote());
+        assertEquals(List.of("absolute_directory_path"), document.pathExposures());
     }
 
     private static Report.Stage stage(Report report, String kind) {

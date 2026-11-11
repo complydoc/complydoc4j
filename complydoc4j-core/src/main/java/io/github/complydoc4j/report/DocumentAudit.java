@@ -91,10 +91,28 @@ public final class DocumentAudit {
         }
         List<String> texts = new ArrayList<>();
         pages.values().forEach(parts -> texts.add(String.join("\n\n", parts)));
-        Path path = Path.of(key);
+        Path path = located(key, members);
         Source source = new Source(key, key, path, digest(path, members), formatOf(key), numbered, loaderName, "loader",
                 true, List.of(), metadataFindings(members, config, reveal, scannedValues), pathKeys(members));
         return fromPages(source, new ArrayList<>(pages.keySet()), texts, config, reveal, keepText, started, 0);
+    }
+
+    /**
+     * Where the file a loader read is, to check how it hides text. LangChain4j's file loader
+     * names it by {@code file_name} and keeps its folder in {@code absolute_directory_path};
+     * other loaders name it by a path.
+     */
+    private static Path located(String key, List<Item> members) {
+        for (Item member : members) {
+            if (member.metadata().get("absolute_directory_path") instanceof String folder
+                    && member.metadata().get("file_name") instanceof String name) {
+                Path file = Path.of(folder, name);
+                if (Files.isRegularFile(file)) {
+                    return file;
+                }
+            }
+        }
+        return Path.of(key);
     }
 
     /** A file read by complydoc4j's own readers, audited as {@code complydoc audit} audits it. */
