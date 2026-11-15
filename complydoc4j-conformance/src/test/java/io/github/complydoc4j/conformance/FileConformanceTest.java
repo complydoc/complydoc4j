@@ -122,7 +122,8 @@ class FileConformanceTest {
     @SuppressWarnings("unchecked")
     private static List<Object> hidden(Map<String, Object> document) {
         List<Object> out = new ArrayList<>();
-        for (Object f : (List<Object>) document.get("content_findings")) {
+        // A document one side did not audit has none: the check of the documents says why.
+        for (Object f : (List<Object>) document.getOrDefault("content_findings", List.of())) {
             Map<String, Object> finding = (Map<String, Object>) f;
             Map<String, Object> kept = new LinkedHashMap<>();
             for (String key : List.of("page", "visibility", "instruction", "severity", "hidden_reasons",
