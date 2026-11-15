@@ -2517,8 +2517,8 @@
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
-      "commit": "c4f02f8b79650bb8e8289d60a8b36f9498b2a6b1",
+      "branch": "feature/java-fixtures-html-email-powerpoint",
+      "commit": "677d9199ee1407b65f83c4ff910277aa9233bb88",
       "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
@@ -2528,7 +2528,7 @@
     "duration_seconds": 0.0,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T20:06:10+00:00",
+    "finished_at": "2026-11-15T14:44:55+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2544,7 +2544,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T20:06:10+00:00",
+    "started_at": "2026-11-15T14:44:55+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.11",
@@ -2597,7 +2597,7 @@
       "pypdf": "6.21.4"
     },
     "name": "wrapped_iban",
-    "overhead_seconds": 0.063,
+    "overhead_seconds": 0.078,
     "scan": "patterns",
     "seconds": 0.0,
     "stages": [
@@ -2748,9 +2748,9 @@
           }
         ],
         "ids": [
-          "c08564ca-fb4a-439a-9d3b-4a16fdb65cb1",
-          "871020c0-8d29-4020-9d2e-bbecb041c9d5",
-          "6ebc8526-606d-4eff-adf4-2d82aab8125e"
+          "3c0f0a6c-24c6-4fdd-b9d0-aac06892d9b7",
+          "b6e39fa4-f4a9-489d-9d12-43eed3e3055d",
+          "62b20525-1c6b-4110-9ae6-0b8b663d5cf7"
         ],
         "index": 1,
         "kind": "store",

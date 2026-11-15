@@ -88,11 +88,11 @@ public final class Complydoc4j {
     }
 
     /** Formats the Python package reads and complydoc4j does not yet: listed as skipped, never left out silently. */
-    private static final List<String> NOT_YET = List.of("html", "email", "pptx", "image");
+    private static final List<String> NOT_YET = List.of("image");
 
     /**
      * Audit a folder, or one file, as {@code complydoc audit} does with {@code --security}:
-     * every PDF, Word, Excel, text and Markdown file in it, its subfolders included, read by
+     * every PDF, Word, Excel, PowerPoint, HTML, email, text and Markdown file in it, its subfolders included, read by
      * complydoc4j's own readers and checked for identifiers and hidden text.
      */
     public static Report audit(Path target) throws IOException {
@@ -119,8 +119,8 @@ public final class Complydoc4j {
             String format = DocumentAudit.formatOf(file.toString());
             if (!DocumentReader.supported(file)) {
                 if (NOT_YET.contains(format)) {
-                    skipped.add(new Skip(relative, "unsupported", "complydoc4j has no reader for " + format
-                            + " files yet; complydoc in Python reads them"));
+                    skipped.add(new Skip(relative, "unsupported", "complydoc4j does not read " + format
+                            + " files yet: they need OCR, which complydoc in Python runs"));
                 }
                 continue;
             }

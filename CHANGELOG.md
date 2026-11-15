@@ -4,6 +4,25 @@ Newest first. Releases increment the patch number; the minor number changes for 
 way of using complydoc4j, or for a breaking change to its API. The report it writes
 follows complydoc's report schema, which is versioned separately, as `run.schema_version`.
 
+## [Unreleased]
+
+### Added
+
+- PowerPoint, HTML and email files are read, as complydoc reads them, and no longer listed
+  as skipped. PowerPoint gives a page per slide, with speaker notes after the slide's text.
+  An HTML page is one page, its table cells separated by tabs. An email gives its headers,
+  then the plain body, or the HTML one as text.
+- Their hidden text is checked:
+  - PowerPoint: hidden slides, shapes placed outside the slide, and text under 1pt.
+  - HTML, and the HTML body of an email: the hidden attribute, `display: none`,
+    `visibility: hidden`, no opacity, transparent or white text, text under 1pt, zero
+    height, comments, and text placed off screen.
+  - Markdown: HTML comments, link references used as comments, and hidden inline HTML.
+    Code blocks are left alone.
+
+  As in complydoc, a passage hidden in HTML or Markdown is reported only when it reads as an
+  instruction, since pages routinely hide menus and comments.
+
 ## [0.1.0] — 2026-11-11
 
 The first release: complydoc for Java, writing the same report as complydoc 0.7.11
