@@ -146,6 +146,18 @@ public final class HiddenCheck {
                 case ".xlsx", ".xlsm" -> {
                     return OfficeVisibility.xlsx(path, visibility);
                 }
+                case ".pptx" -> {
+                    return MarkupVisibility.pptx(path, visibility);
+                }
+                case ".html", ".htm" -> {
+                    return MarkupVisibility.html(path, visibility);
+                }
+                case ".md", ".markdown" -> {
+                    return MarkupVisibility.markdown(path, visibility);
+                }
+                case ".eml" -> {
+                    return MarkupVisibility.eml(path, visibility);
+                }
                 default -> { }
             }
         } catch (RuntimeException e) {

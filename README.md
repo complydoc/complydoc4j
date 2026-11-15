@@ -30,8 +30,8 @@ Complydoc4j.scanText("IBAN: GB29 NWBK 6016 1331 9268 19");  // the identifiers, 
 Complydoc4j.maskText(prompt);                               // the text, identifiers masked
 Complydoc4j.findHidden(retrievedChunk);                     // invisible text, planted instructions
 
-Report report = Complydoc4j.audit(Path.of("contracts"));  // a folder of PDF, Word, Excel, text files,
-                                                          // checked against its .complydoc-evals.yaml
+Report report = Complydoc4j.audit(Path.of("contracts"));  // a folder of documents, checked
+                                                          // against its .complydoc-evals.yaml
 Report read = Complydoc4j.audit(items, "my-reader");      // documents you have already read
 Complydoc4j.write(report, Path.of(".complydoc/contracts.json"));
 ```
@@ -73,10 +73,12 @@ The report has the same shape, and these sections are null or empty:
   none here. The report lists them as not looked for, as Python does when its name model
   isn't installed.
 - **Cost, readiness and routing.**
-- **HTML, email, PowerPoint and images.** A folder audit lists these files as skipped. It
-  reads PDF, Word, Excel, text and Markdown files, and checks how each PDF, Word and Excel
-  file hides text: white, tiny, off-page, invisible or covered text, hidden runs, hidden
-  sheets, rows and columns. It doesn't run OCR.
+- **Images.** They need OCR, which complydoc4j doesn't run, so a folder audit lists them as
+  skipped. It reads PDF, Word, Excel, PowerPoint, HTML, email, text and Markdown files. For
+  each, it checks the ways that format hides text: in a PDF, white, tiny, off-page,
+  invisible or covered text; hidden runs in Word; hidden sheets, rows and columns in Excel;
+  hidden slides and shapes off the slide in PowerPoint; and in HTML, email and Markdown,
+  hidden styles, comments and the like.
 - **Where an embedding call went.** Python sees this from inside its network guard. Here it
   is read from the endpoint in the model's settings, and the report says so.
 

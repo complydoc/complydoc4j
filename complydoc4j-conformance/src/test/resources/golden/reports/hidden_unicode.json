@@ -1,6 +1,6 @@
 {
   "aggregate": {
-    "analyse_seconds": 0.003,
+    "analyse_seconds": 0.008,
     "annual_text_usd": null,
     "annual_vision_usd": null,
     "categories_not_scanned": {
@@ -41,18 +41,18 @@
     "pages_total": 1,
     "pages_unreadable": 0,
     "projected_seconds": {
-      "100": 0.5,
-      "1000": 5.0,
-      "10000": 50.0,
-      "100000": 500.0
+      "100": 1.1,
+      "1000": 11.0,
+      "10000": 110.0,
+      "100000": 1100.0
     },
     "read_seconds": 0.0,
     "readiness_bands": {
       "ready": 1
     },
     "scan_seconds": 0.002,
-    "seconds_per_document": 0.005,
-    "seconds_per_page": 0.005,
+    "seconds_per_document": 0.011,
+    "seconds_per_page": 0.011,
     "sensitive_by_category": {},
     "sensitive_by_severity": {},
     "sensitive_total": 0,
@@ -219,7 +219,7 @@
         "poor": 0
       }
     },
-    "total_seconds": 0.005,
+    "total_seconds": 0.011,
     "total_text_path_usd": 2.8800000000000002e-05,
     "total_vision_path_usd": null
   },
@@ -2228,12 +2228,12 @@
       },
       "sha256": "fbc9d065b5aef9c40a1f34ee6f81c227ac674d7765f193a68ddf09531fcc1e1f",
       "timing": {
-        "analyse_seconds": 0.003,
+        "analyse_seconds": 0.008,
         "read_seconds": 0.0,
         "scan_seconds": 0.002,
-        "seconds_per_page": 0.005,
+        "seconds_per_page": 0.011,
         "started_at": null,
-        "total_seconds": 0.005
+        "total_seconds": 0.011
       },
       "verification": null,
       "visibility_checked": false,
@@ -2639,18 +2639,18 @@
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
-      "commit": "c4f02f8b79650bb8e8289d60a8b36f9498b2a6b1",
+      "branch": "feature/java-fixtures-html-email-powerpoint",
+      "commit": "677d9199ee1407b65f83c4ff910277aa9233bb88",
       "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
     },
     "documents_read_after_worker_failure": 0,
-    "duration_seconds": 0.008,
+    "duration_seconds": 0.078,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T20:06:09+00:00",
+    "finished_at": "2026-11-15T14:44:54+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2666,7 +2666,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T20:06:09+00:00",
+    "started_at": "2026-11-15T14:44:53+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.11",
@@ -2718,9 +2718,9 @@
       "langchain-text-splitters": "1.1.2"
     },
     "name": "hidden_unicode",
-    "overhead_seconds": 0.744,
+    "overhead_seconds": 0.986,
     "scan": "patterns",
-    "seconds": 0.008,
+    "seconds": 0.078,
     "stages": [
       {
         "characters_in": 324,
@@ -2863,11 +2863,11 @@
         "hosts": [],
         "identifiers": [],
         "ids": [
-          "d7931dfc-c085-46b2-b5cd-460c349958e9",
-          "d5e6a97f-8895-4fcb-9c7f-78713c7f2f7d",
-          "addd7a57-f7da-4119-8cab-4997a5276969",
-          "8404ce27-6412-4662-bbb1-9133ded008b2",
-          "94aeea45-fac5-442d-8fed-6e007c252006"
+          "c215ff2f-2677-4d43-ab0c-7b302ec994ef",
+          "d273618a-1243-4f2c-82e8-67f5cfbc6c2d",
+          "408559d3-e331-454d-b581-06103c87886d",
+          "c1361feb-aecf-4644-b0e2-cdcb36941ee2",
+          "09dddb42-101e-4403-828e-9d7039e4f9eb"
         ],
         "index": 1,
         "kind": "store",
@@ -2933,7 +2933,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0078,
+        "seconds": 0.0781,
         "sources": [
           "hidden_unicode.txt"
         ],
@@ -3027,9 +3027,9 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0078,
+        "seconds": 0.078,
         "sources": [],
-        "started": 0.0001,
+        "started": 0.0002,
         "tags": [
           "LangChain"
         ],

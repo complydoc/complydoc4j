@@ -2744,8 +2744,8 @@
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
-      "commit": "c4f02f8b79650bb8e8289d60a8b36f9498b2a6b1",
+      "branch": "feature/java-fixtures-html-email-powerpoint",
+      "commit": "677d9199ee1407b65f83c4ff910277aa9233bb88",
       "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
@@ -2755,7 +2755,7 @@
     "duration_seconds": 0.0,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T20:06:10+00:00",
+    "finished_at": "2026-11-15T14:44:55+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2771,7 +2771,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T20:06:10+00:00",
+    "started_at": "2026-11-15T14:44:55+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.11",
@@ -2824,7 +2824,7 @@
       "pypdf": "6.21.4"
     },
     "name": "identifiers_eu",
-    "overhead_seconds": 0.07,
+    "overhead_seconds": 0.079,
     "scan": "patterns",
     "seconds": 0.0,
     "stages": [
@@ -3195,9 +3195,9 @@
           }
         ],
         "ids": [
-          "c836448a-bddf-4d58-9da5-dd44cb6e8bf0",
-          "c3ca3614-a0bd-45a9-a1d8-b32c599dda2e",
-          "4d3cb645-4538-485f-8e4f-220c0a6a4976"
+          "002ef78d-5e84-4892-8940-1963ba294412",
+          "e50f2f6b-2434-444e-a349-4772abdb5e4f",
+          "aac8c3b2-1d39-442a-beca-74809b37a211"
         ],
         "index": 1,
         "kind": "store",

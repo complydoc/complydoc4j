@@ -1,6 +1,6 @@
 {
   "aggregate": {
-    "analyse_seconds": 0.0,
+    "analyse_seconds": 0.001,
     "annual_text_usd": null,
     "annual_vision_usd": null,
     "categories_not_scanned": {
@@ -2202,7 +2202,7 @@
       },
       "sha256": "74321dca5f22bad9193162ed05a0e481bca2d0c2a00a045c01a848f78d499c33",
       "timing": {
-        "analyse_seconds": 0.0,
+        "analyse_seconds": 0.001,
         "read_seconds": 0.0,
         "scan_seconds": 0.001,
         "seconds_per_page": 0.002,
@@ -2605,8 +2605,8 @@
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feature/java-version-for-langchain4j-and-quarkus-same-re",
-      "commit": "c4f02f8b79650bb8e8289d60a8b36f9498b2a6b1",
+      "branch": "feature/java-fixtures-html-email-powerpoint",
+      "commit": "677d9199ee1407b65f83c4ff910277aa9233bb88",
       "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
@@ -2616,7 +2616,7 @@
     "duration_seconds": 0.0,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-10T20:06:10+00:00",
+    "finished_at": "2026-11-15T14:44:55+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2632,7 +2632,7 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-10T20:06:10+00:00",
+    "started_at": "2026-11-15T14:44:55+00:00",
     "target": "documents",
     "timeout_seconds": null,
     "tool_version": "0.7.11",
@@ -2685,7 +2685,7 @@
       "pypdf": "6.21.4"
     },
     "name": "invoice_en",
-    "overhead_seconds": 0.067,
+    "overhead_seconds": 0.08,
     "scan": "patterns",
     "seconds": 0.0,
     "stages": [
@@ -2880,9 +2880,9 @@
           }
         ],
         "ids": [
-          "d3d041f3-08b4-4cff-99bf-320be298cb16",
-          "43bb1740-ec8b-4a76-b7d6-8f6cf512d897",
-          "6b2d001f-d774-446a-8e42-78bbf2468161"
+          "07361aa3-bbf4-4ae7-88f2-d68a05b587ea",
+          "f2232c93-44b3-4354-b3f9-b050e2a7786a",
+          "16a8e137-9bd1-462f-850c-3010947c75ea"
         ],
         "index": 1,
         "kind": "store",

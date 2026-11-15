@@ -14,11 +14,14 @@ import java.util.List;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import io.github.complydoc4j.text.Py;
 
 /**
  * Reads a file into pages of text, the way complydoc's own readers do: a PDF a page a page
  * with PDFBox; a Word file as one logical page, its paragraphs and then its tables' cells;
- * an Excel file a sheet a page, its cells tab-separated; a text or Markdown file as one page.
+ * an Excel file a sheet a page, its cells tab-separated; a PowerPoint file a slide a page,
+ * speaker notes after the slide; an HTML page, an email and a text or Markdown file as one
+ * page.
  */
 public final class DocumentReader {
 
@@ -41,7 +44,8 @@ public final class DocumentReader {
     private DocumentReader() {}
 
     public static boolean supported(Path path) {
-        return List.of("pdf", "docx", "xlsx", "text", "markdown").contains(DocumentAudit.formatOf(path.toString()));
+        return List.of("pdf", "docx", "xlsx", "pptx", "html", "email", "text", "markdown")
+                .contains(DocumentAudit.formatOf(path.toString()));
     }
 
     public static Read read(Path path) throws IOException {
@@ -64,11 +68,58 @@ public final class DocumentReader {
                     return new Read(format, pages, false, List.of());
                 }
             }
+            case "pptx" -> {
+                return pptx(path);
+            }
+            case "html" -> {
+                return html(path);
+            }
+            case "email" -> {
+                Mail.Read mail = Mail.read(path);
+                return new Read("email", List.of(mail.text()), false, mail.warnings());
+            }
             case "text", "markdown" -> {
                 return text(path, format);
             }
             default -> throw new Unsupported("complydoc4j has no reader for " + format + " files yet");
         }
+    }
+
+    private static Read pptx(Path path) throws IOException {
+        List<Pptx.Slide> slides = Pptx.read(path);
+        List<String> pages = new ArrayList<>();
+        List<String> picturesOnly = new ArrayList<>();
+        for (Pptx.Slide slide : slides) {
+            pages.add(slide.text());
+            if (slide.pictures() > 0 && Py.len(Py.strip(slide.text())) < Pptx.FEW_CHARACTERS) {
+                picturesOnly.add(String.valueOf(slide.number()));
+            }
+        }
+        List<String> warnings = new ArrayList<>();
+        if (slides.isEmpty()) {
+            warnings.add("The presentation has no slides.");
+        }
+        if (!picturesOnly.isEmpty()) {
+            warnings.add("Slides " + String.join(", ", picturesOnly)
+                    + " hold pictures and little text. Text inside pictures is not read.");
+        }
+        return new Read("pptx", pages, true, warnings);
+    }
+
+    private static Read html(Path path) throws IOException {
+        byte[] data = Files.readAllBytes(path);
+        if (Py.blank(new String(data, StandardCharsets.ISO_8859_1))) {
+            return new Read("html", List.of(""), false, List.of());
+        }
+        org.jsoup.nodes.Element root = Html.root(Html.parse(data));
+        String text = Html.text(root);
+        int scripts = Html.scripts(root);
+        List<String> warnings = new ArrayList<>();
+        if (scripts > 0 && text.codePoints().filter(Py::isAlnum).count() < Html.FEW_LETTERS) {
+            warnings.add("The page has little text and " + scripts + " script" + (scripts == 1 ? "" : "s")
+                    + ". Text a script adds in a browser is not in the file, so it was not read.");
+        }
+        return new Read("html", List.of(text), false, warnings);
     }
 
     private static Read pdf(Path path) throws IOException {
