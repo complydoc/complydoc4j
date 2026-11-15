@@ -4,7 +4,10 @@ Newest first. Releases increment the patch number; the minor number changes for 
 way of using complydoc4j, or for a breaking change to its API. The report it writes
 follows complydoc's report schema, which is versioned separately, as `run.schema_version`.
 
-## [Unreleased]
+## [0.1.1] — 2026-11-15
+
+PowerPoint, HTML and email files are read, and the text they and Markdown hide is checked,
+as complydoc 0.7.12 checks it. Only images are still skipped. The report stays at schema 27.
 
 ### Added
 

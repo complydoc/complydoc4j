@@ -21,7 +21,7 @@ Java 17 or later.
 
 complydoc4j isn't on Maven Central yet. Until it is, install it from a clone with
 `mvn install`, then depend on `io.github.complydoc:complydoc4j-langchain4j` (or
-`complydoc4j-core`) at `0.1.0`.
+`complydoc4j-core`) at `0.1.1`.
 
 ## With no framework
 

@@ -40,8 +40,8 @@ import java.util.stream.Stream;
  */
 public final class Complydoc4j {
 
-    /** The version a report records, as {@code run.tool_version}: {@code complydoc4j 0.1.0}. */
-    public static final String VERSION = "0.1.0";
+    /** The version a report records, as {@code run.tool_version}: {@code complydoc4j 0.1.1}. */
+    public static final String VERSION = "0.1.1";
 
     public static final String TOOL = "complydoc4j " + VERSION;
 
