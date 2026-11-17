@@ -143,7 +143,7 @@ public final class Scanner {
                         continue;
                     }
                     Validators.Outcome outcome = Validators.validate(text.substring(rule.start(), rule.end()),
-                            category.validators());
+                            category.validators(), config.checks());
                     if (outcome.passed()) {
                         candidates.add(new Candidate(id, category, rule, outcome.names(), true, findings == null));
                     }
@@ -159,7 +159,7 @@ public final class Scanner {
                     continue;
                 }
                 Validators.Outcome outcome = Validators.validate(text.substring(finding.start(), finding.end()),
-                        category.validators());
+                        category.validators(), config.checks());
                 if (outcome.passed()) {
                     candidates.add(new Candidate(id, category, finding, outcome.names(), false, false));
                 }

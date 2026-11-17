@@ -69,7 +69,28 @@ public final class ConfigLoader {
                 strings(masking.get("never_reveal")));
         Map<String, CategoryConfig> categories = new LinkedHashMap<>();
         map(raw.get("categories")).forEach((id, value) -> categories.put(id, category(map(value))));
-        return new Config.Sensitive(integer(raw.get("schema_version"), 1), mask, categories);
+        Map<String, Check> checks = new LinkedHashMap<>();
+        map(raw.get("checks")).forEach((id, value) -> checks.put(id, check(map(value))));
+        return new Config.Sensitive(integer(raw.get("schema_version"), 1), mask, checks, categories);
+    }
+
+    private static Check check(Map<String, Object> raw) {
+        Object length = raw.get("length");
+        List<Integer> lengths = length instanceof List<?> ? integers(length) : List.of(integer(length, 0));
+        Map<Integer, Integer> replace = new LinkedHashMap<>();
+        map(raw.get("replace")).forEach((from, to) -> replace.put(Integer.valueOf(String.valueOf(from)), integer(to, 0)));
+        Object subtract = raw.get("subtract_from");
+        return new Check(lengths, strings(raw.get("starts_with")), string(raw.get("method"), ""),
+                integers(raw.get("weights")), integer(raw.get("modulus"), 10), bool(raw.get("zero"), false),
+                subtract instanceof Number n ? n.intValue() : null, replace, integers(raw.get("invalid")));
+    }
+
+    private static List<Integer> integers(Object value) {
+        List<Integer> out = new ArrayList<>();
+        for (Object item : list(value)) {
+            out.add(integer(item, 0));
+        }
+        return out;
     }
 
     private static CategoryConfig category(Map<String, Object> raw) {
