@@ -655,7 +655,8 @@ public final class Validators {
         }
         int day = Integer.parseInt(digits.substring(0, 2));
         int month = Integer.parseInt(digits.substring(2, 4));
-        if (!plausibleDate(day > 40 ? day - 40 : day, month)) {
+        // D-numbers add 40 to the day; H-numbers add 40 to the month (41 to 52).
+        if (!plausibleDate(day > 40 ? day - 40 : day, month > 40 ? month - 40 : month)) {
             return false;
         }
         int[] w1 = {3, 7, 6, 1, 8, 9, 4, 5, 2};
