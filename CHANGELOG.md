@@ -10,6 +10,8 @@ follows complydoc's report schema, which is versioned separately, as `run.schema
 
 - A fact in `.complydoc-evals.yaml` can name its page, `page: 4`, as in complydoc: it is
   looked for on that page's text only. Such a file was refused before.
+- Norwegian H-numbers (month 41 to 52) are accepted by `no_fnr` and found next to
+  "h-nummer", as in complydoc.
 
 ## [0.1.1] — 2026-11-15
 
