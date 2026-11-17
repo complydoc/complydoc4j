@@ -18,8 +18,11 @@ public record Config(Sensitive sensitive, Hidden hidden, String sourceDir, Strin
         }
     }
 
-    public record Sensitive(int schemaVersion, Masking masking, Map<String, CategoryConfig> categories) {
+    /** @param checks the check digits declared as data, by name */
+    public record Sensitive(int schemaVersion, Masking masking, Map<String, Check> checks,
+            Map<String, CategoryConfig> categories) {
         public Sensitive {
+            checks = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(checks));
             categories = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(categories));
         }
 
@@ -63,7 +66,7 @@ public record Config(Sensitive sensitive, Hidden hidden, String sourceDir, Strin
         Map<String, CategoryConfig> categories = new LinkedHashMap<>();
         sensitive.categories().forEach((id, category) ->
                 categories.put(id, category.modelBacked() ? category.withEnabled(false) : category));
-        return new Config(new Sensitive(sensitive.schemaVersion(), sensitive.masking(), categories),
+        return new Config(new Sensitive(sensitive.schemaVersion(), sensitive.masking(), sensitive.checks(), categories),
                 hidden, sourceDir, digest);
     }
 }

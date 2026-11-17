@@ -1,5 +1,6 @@
 package io.github.complydoc4j.sensitive;
 
+import io.github.complydoc4j.config.Check;
 import io.github.complydoc4j.text.Py;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -79,18 +80,57 @@ public final class Validators {
 
     /** Run the named validators; an unknown name is skipped, as in Python. */
     public static Outcome validate(String value, List<String> names) {
+        return validate(value, names, Map.of());
+    }
+
+    /** Run the named validators, written in code or declared in {@code checks}. */
+    public static Outcome validate(String value, List<String> names, Map<String, Check> checks) {
         List<String> passed = new ArrayList<>();
         for (String name : names) {
-            Predicate<String> check = VALIDATORS.get(name);
-            if (check == null) {
+            Predicate<String> code = VALIDATORS.get(name);
+            boolean ok;
+            if (code != null) {
+                ok = code.test(value);
+            } else if (checks.containsKey(name)) {
+                ok = declared(checks.get(name), value);
+            } else {
                 continue;
             }
-            if (!check.test(value)) {
+            if (!ok) {
                 return new Outcome(false, passed);
             }
             passed.add(name);
         }
         return new Outcome(true, passed);
+    }
+
+    /** Whether {@code value} passes a check declared in {@code sensitive.yaml}. */
+    public static boolean declared(Check check, String value) {
+        String digits = digits(value);
+        if (!check.lengths().contains(digits.length())) {
+            return false;
+        }
+        if (!check.startsWith().isEmpty() && check.startsWith().stream().noneMatch(digits::startsWith)) {
+            return false;
+        }
+        if ("luhn".equals(check.method())) {
+            return luhnValid(digits);
+        }
+        List<Integer> weights = check.weights();
+        int total = 0;
+        for (int i = 0; i < weights.size() && i < digits.length(); i++) {
+            total += d(digits, i) * weights.get(i);
+        }
+        // Python's modulo: never negative, whatever the sign of a weight.
+        int remainder = Math.floorMod(total, check.modulus());
+        if (check.zero()) {
+            return remainder == 0;
+        }
+        int result = check.subtractFrom() == null ? remainder : check.subtractFrom() - remainder;
+        if (check.invalid().contains(result)) {
+            return false;
+        }
+        return check.replace().getOrDefault(result, result) == d(digits, weights.size());
     }
 
     // --- helpers ------------------------------------------------------------------

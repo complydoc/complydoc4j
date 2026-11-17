@@ -8,6 +8,8 @@ follows complydoc's report schema, which is versioned separately, as `run.schema
 
 ### Added
 
+- Check digits declared in `sensitive.yaml` under `checks` are read and run, as in complydoc:
+  a new identifier declared there needs no Java.
 - A fact in `.complydoc-evals.yaml` can name its page, `page: 4`, as in complydoc: it is
   looked for on that page's text only. Such a file was refused before.
 - Norwegian H-numbers (month 41 to 52) are accepted by `no_fnr` and found next to

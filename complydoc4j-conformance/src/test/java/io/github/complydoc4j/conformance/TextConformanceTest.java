@@ -41,7 +41,10 @@ class TextConformanceTest {
         Map<String, Map<String, Boolean>> expected =
                 (Map<String, Map<String, Boolean>>) Golden.read(Golden.ROOT.resolve("validators.json"));
         return expected.entrySet().stream().map(entry -> DynamicTest.dynamicTest(entry.getKey(), () -> {
-            Predicate<String> check = Validators.VALIDATORS.get(entry.getKey());
+            // Written in code, or declared in sensitive.yaml as Python's are.
+            Predicate<String> check = Validators.VALIDATORS.containsKey(entry.getKey())
+                    ? Validators.VALIDATORS.get(entry.getKey())
+                    : value -> Validators.declared(PATTERNS.sensitive().checks().get(entry.getKey()), value);
             List<String> wrong = new ArrayList<>();
             entry.getValue().forEach((value, verdict) -> {
                 if (check.test(value) != verdict) {
