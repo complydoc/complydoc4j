@@ -2517,8 +2517,8 @@
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feature/java-fixtures-html-email-powerpoint",
-      "commit": "677d9199ee1407b65f83c4ff910277aa9233bb88",
+      "branch": "test/37-java-evals-page",
+      "commit": "e083e26cde7f3578fa17f15bf68a5e4f67ed4ca5",
       "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
@@ -2528,11 +2528,11 @@
     "duration_seconds": 0.0,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-15T14:44:55+00:00",
+    "finished_at": "2026-11-17T10:40:20+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
-    "ocr_available": false,
+    "ocr_available": true,
     "ocr_compare_used": false,
     "ocr_requested": false,
     "offline_guard": "armed",
@@ -2544,10 +2544,10 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-15T14:44:55+00:00",
+    "started_at": "2026-11-17T10:40:20+00:00",
     "target": "documents",
     "timeout_seconds": null,
-    "tool_version": "0.7.11",
+    "tool_version": "0.7.12",
     "verify_model": null,
     "verify_scope": null
   },
@@ -2597,7 +2597,7 @@
       "pypdf": "6.21.4"
     },
     "name": "wrapped_iban",
-    "overhead_seconds": 0.078,
+    "overhead_seconds": 0.079,
     "scan": "patterns",
     "seconds": 0.0,
     "stages": [
@@ -2748,9 +2748,9 @@
           }
         ],
         "ids": [
-          "3c0f0a6c-24c6-4fdd-b9d0-aac06892d9b7",
-          "b6e39fa4-f4a9-489d-9d12-43eed3e3055d",
-          "62b20525-1c6b-4110-9ae6-0b8b663d5cf7"
+          "c66e872a-ec0a-4750-8ba4-607880be5319",
+          "57c7a194-bfec-4f27-ae4b-56cff76e4b3f",
+          "362a5c9a-a115-4141-a16b-589c7929a932"
         ],
         "index": 1,
         "kind": "store",

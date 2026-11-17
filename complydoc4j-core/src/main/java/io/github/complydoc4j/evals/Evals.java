@@ -26,8 +26,11 @@ public final class Evals {
     public static final String FILENAME = ".complydoc-evals.yaml";
     private static final List<String> KINDS = List.of("text", "value", "absent");
 
-    /** A passage a document is expected to contain, or a value, or a passage it must not. */
-    public record Fact(String text, String document, String kind, String label) {}
+    /**
+     * A passage a document is expected to contain, or a value, or a passage it must not. With a
+     * {@code page}, counted from 1, it is looked for on that page only; null looks on every page.
+     */
+    public record Fact(String text, String document, String kind, String label, Integer page) {}
 
     /** What a fact came to for each reader: found, scored, where, and the nearest passage. */
     public record FactCheck(String fact, String document, Map<String, String> found, Map<String, Double> scores,
@@ -93,7 +96,7 @@ public final class Evals {
             }
         }
         for (String key : data.keySet()) {
-            if (!List.of("text", "kind", "document", "label").contains(key)) {
+            if (!List.of("text", "kind", "document", "label", "page").contains(key)) {
                 throw invalid(path, "a fact has no `" + key + "`");
             }
         }
@@ -117,7 +120,46 @@ public final class Evals {
         if (label != null && !kind.equals("value")) {
             throw invalid(path, "only a value has a label");
         }
-        return new Fact(text, document, kind, label);
+        return new Fact(text, document, kind, label, page(data.get("page"), path));
+    }
+
+    /**
+     * A fact's page as the Python package reads it: a whole number of 1 or more, given as a
+     * number or as text ({@code 4}, {@code 4.0}, {@code "4"}), or none.
+     */
+    private static Integer page(Object value, Path path) throws EvalError {
+        if (value == null) {
+            return null;
+        }
+        Long whole = null;
+        if (value instanceof Boolean b) {
+            whole = b ? 1L : 0L;
+        } else if (value instanceof Integer || value instanceof Long) {
+            whole = ((Number) value).longValue();
+        } else if (value instanceof java.math.BigInteger big) {
+            whole = big.bitLength() < 63 ? big.longValue() : Long.MAX_VALUE;
+        } else if (value instanceof Double d) {
+            whole = d == Math.rint(d) && !d.isInfinite() ? (long) (double) d : null;
+        } else if (value instanceof String text) {
+            String number = text.strip();
+            try {
+                whole = Long.parseLong(number);
+            } catch (NumberFormatException e) {
+                try {
+                    double d = Double.parseDouble(number);
+                    whole = d == Math.rint(d) && !Double.isInfinite(d) ? (long) d : null;
+                } catch (NumberFormatException notANumber) {
+                    whole = null;
+                }
+            }
+        }
+        if (whole == null) {
+            throw invalid(path, "a fact's page is a whole number");
+        }
+        if (whole < 1) {
+            throw invalid(path, "a fact's page is 1 or more");
+        }
+        return whole > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) (long) whole;
     }
 
     /** A number in YAML as Python's {@code str()} writes it, since that is what the fact is. */
@@ -150,6 +192,7 @@ public final class Evals {
                         continue;
                     }
                     List<Facts.Page> pairs = document.extractedText().stream()
+                            .filter(p -> fact.page() == null || p.number() == fact.page())
                             .map(p -> new Facts.Page(p.number(), p.text())).toList();
                     Facts.Match match = fact.kind().equals("value")
                             ? Facts.findValue(pairs, fact.text(), fact.label())

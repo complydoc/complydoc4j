@@ -2744,22 +2744,22 @@
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feature/java-fixtures-html-email-powerpoint",
-      "commit": "677d9199ee1407b65f83c4ff910277aa9233bb88",
+      "branch": "test/37-java-evals-page",
+      "commit": "e083e26cde7f3578fa17f15bf68a5e4f67ed4ca5",
       "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
     },
     "documents_read_after_worker_failure": 0,
-    "duration_seconds": 0.0,
+    "duration_seconds": 0.001,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-15T14:44:55+00:00",
+    "finished_at": "2026-11-17T10:40:20+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
-    "ocr_available": false,
+    "ocr_available": true,
     "ocr_compare_used": false,
     "ocr_requested": false,
     "offline_guard": "armed",
@@ -2771,10 +2771,10 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-15T14:44:55+00:00",
+    "started_at": "2026-11-17T10:40:20+00:00",
     "target": "documents",
     "timeout_seconds": null,
-    "tool_version": "0.7.11",
+    "tool_version": "0.7.12",
     "verify_model": null,
     "verify_scope": null
   },
@@ -2824,9 +2824,9 @@
       "pypdf": "6.21.4"
     },
     "name": "identifiers_eu",
-    "overhead_seconds": 0.079,
+    "overhead_seconds": 0.088,
     "scan": "patterns",
-    "seconds": 0.0,
+    "seconds": 0.001,
     "stages": [
       {
         "characters_in": 324,
@@ -3195,9 +3195,9 @@
           }
         ],
         "ids": [
-          "002ef78d-5e84-4892-8940-1963ba294412",
-          "e50f2f6b-2434-444e-a349-4772abdb5e4f",
-          "aac8c3b2-1d39-442a-beca-74809b37a211"
+          "e49b2d9e-ca65-42e5-b91c-6e6b5ee2294c",
+          "6ae404d6-abdd-4bcc-b461-bb1f513f4008",
+          "6460fca1-1e4d-4e5b-9ec8-af990f531f47"
         ],
         "index": 1,
         "kind": "store",
@@ -3243,7 +3243,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0002,
+        "seconds": 0.0004,
         "sources": [
           "identifiers_eu.txt"
         ],

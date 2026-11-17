@@ -4,6 +4,13 @@ Newest first. Releases increment the patch number; the minor number changes for 
 way of using complydoc4j, or for a breaking change to its API. The report it writes
 follows complydoc's report schema, which is versioned separately, as `run.schema_version`.
 
+## [Unreleased]
+
+### Added
+
+- A fact in `.complydoc-evals.yaml` can name its page, `page: 4`, as in complydoc: it is
+  looked for on that page's text only. Such a file was refused before.
+
 ## [0.1.1] — 2026-11-15
 
 PowerPoint, HTML and email files are read, and the text they and Markdown hide is checked,
