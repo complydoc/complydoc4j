@@ -31,8 +31,8 @@ public final class Scanner {
     private static final Set<String> EXCLUSIVE_GROUP = Set.of(
             "ni_number", "sort_code", "bank_account_number", "iban", "card_number", "phone_number",
             "date_of_birth", "vat_number", "utr", "international_phone", "us_phone", "us_ssn",
-            "us_ein", "us_routing_number", "nl_bsn", "pt_nif", "de_steuer_id", "be_national_number",
-            "pl_pesel", "se_personnummer", "dk_cpr", "no_fnr", "ch_ahv", "br_cpf", "br_cnpj",
+            "us_ein", "us_routing_number", "nl_bsn", "pt_nif", "pt_niss", "de_steuer_id", "be_national_number",
+            "pl_pesel", "se_personnummer", "dk_cpr", "no_fnr", "fi_hetu", "ch_ahv", "br_cpf", "br_cnpj",
             "in_aadhaar", "ca_sin", "au_tfn");
 
     public record UnscannedCategory(String category, String label, String reason) {}
