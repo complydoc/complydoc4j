@@ -8,6 +8,8 @@ follows complydoc's report schema, which is versioned separately, as `run.schema
 
 ### Added
 
+- Finnish personal identity codes (henkilötunnus), checked by century sign, date and check
+  character, as in complydoc.
 - Check digits declared in `sensitive.yaml` under `checks` are read and run, as in complydoc:
   a new identifier declared there needs no Java.
 - A fact in `.complydoc-evals.yaml` can name its page, `page: 4`, as in complydoc: it is
