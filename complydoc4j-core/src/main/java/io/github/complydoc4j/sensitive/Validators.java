@@ -63,6 +63,7 @@ public final class Validators {
         v.put("se_personnummer", Validators::sePersonnummer);
         v.put("dk_cpr", Validators::dkCpr);
         v.put("no_fnr", Validators::noFnr);
+        v.put("fi_hetu", Validators::fiHetu);
         v.put("ch_ahv", Validators::chAhv);
         v.put("br_cpf", Validators::brCpf);
         v.put("br_cnpj", Validators::brCnpj);
@@ -709,6 +710,27 @@ public final class Validators {
         int r2 = weightedMod(digits.substring(0, 10), w2, 11);
         int k2 = r2 == 0 ? 0 : 11 - r2;
         return k2 == d(digits, 10);
+    }
+
+    private static final Pattern FI_HETU =
+            Pattern.compile("\\d{6}[+\\-A-FU-Y]\\d{3}[0-9A-Z]", Pattern.UNICODE_CHARACTER_CLASS);
+
+    /** Finnish identity code (henkilötunnus): DDMMYY, century sign, three digits, check character. */
+    public static boolean fiHetu(String value) {
+        String code = Py.strip(value).toUpperCase(java.util.Locale.ROOT);
+        if (!FI_HETU.matcher(code).matches()) {
+            return false;
+        }
+        char sign = code.charAt(6);
+        int century = sign == '+' ? 1800 : "-YXWVU".indexOf(sign) >= 0 ? 1900 : 2000;
+        String numbers = digits(code.substring(0, 6)) + digits(code.substring(7, 10));
+        try {
+            LocalDate.of(century + Integer.parseInt(numbers.substring(4, 6)),
+                    Integer.parseInt(numbers.substring(2, 4)), Integer.parseInt(numbers.substring(0, 2)));
+        } catch (java.time.DateTimeException e) {
+            return false;
+        }
+        return "0123456789ABCDEFHJKLMNPRSTUVWXY".charAt((int) (Long.parseLong(numbers) % 31)) == code.charAt(10);
     }
 
     public static boolean chAhv(String value) {
