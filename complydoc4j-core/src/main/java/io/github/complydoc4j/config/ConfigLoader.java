@@ -78,7 +78,10 @@ public final class ConfigLoader {
         Object length = raw.get("length");
         List<Integer> lengths = length instanceof List<?> ? integers(length) : List.of(integer(length, 0));
         Map<Integer, Integer> replace = new LinkedHashMap<>();
-        map(raw.get("replace")).forEach((from, to) -> replace.put(Integer.valueOf(String.valueOf(from)), integer(to, 0)));
+        // YAML reads `{11: 0}` with whole-number keys, so they are not taken as strings here.
+        if (raw.get("replace") instanceof Map<?, ?> given) {
+            given.forEach((from, to) -> replace.put(Integer.valueOf(String.valueOf(from)), integer(to, 0)));
+        }
         Object subtract = raw.get("subtract_from");
         return new Check(lengths, strings(raw.get("starts_with")), string(raw.get("method"), ""),
                 integers(raw.get("weights")), integer(raw.get("modulus"), 10), bool(raw.get("zero"), false),
