@@ -8,6 +8,11 @@ follows complydoc's report schema, which is versioned separately, as `run.schema
 
 ### Added
 
+- Credentials are found, as in complydoc: API keys, JSON Web Tokens confirmed by their
+  header (`jwt_header`), private key blocks and passwords, with placeholders such as
+  `your_api_key_here` left alone (`real_secret`). An email-shaped `password@host` in a
+  connection string is the password, not an email address.
+- Portuguese NIFs starting with 3, 45 and 7 are valid, as in complydoc.
 - Finnish personal identity codes (henkilötunnus), checked by century sign, date and check
   character, as in complydoc.
 - Check digits declared in `sensitive.yaml` under `checks` are read and run, as in complydoc:
@@ -16,6 +21,16 @@ follows complydoc's report schema, which is versioned separately, as `run.schema
   looked for on that page's text only. Such a file was refused before.
 - Norwegian H-numbers (month 41 to 52) are accepted by `no_fnr` and found next to
   "h-nummer", as in complydoc.
+
+### Fixed
+
+- Fewer wrong identifier flags in business documents, as in complydoc. A context label
+  counts only on the value's own line, or the line above when that line has no words
+  before the value, and only as whole words. A value after the label of another field
+  (order, serial, EAN, policy, phone, in seven languages) is not reported as an identifier
+  its digits happen to fit. An unbroken card number needs a card word, an unspaced UK
+  phone number a phone word, an IBAN its country's length, and a French social security
+  number is one identifier.
 
 ## [0.1.1] — 2026-11-15
 

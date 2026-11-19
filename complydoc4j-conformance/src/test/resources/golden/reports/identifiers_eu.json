@@ -30,18 +30,18 @@
     "pages_total": 1,
     "pages_unreadable": 0,
     "projected_seconds": {
-      "100": 0.1,
-      "1000": 1.0,
-      "10000": 10.0,
-      "100000": 100.0
+      "100": 0.3,
+      "1000": 3.0,
+      "10000": 30.0,
+      "100000": 300.0
     },
     "read_seconds": 0.0,
     "readiness_bands": {
       "ready": 1
     },
-    "scan_seconds": 0.001,
-    "seconds_per_document": 0.001,
-    "seconds_per_page": 0.001,
+    "scan_seconds": 0.003,
+    "seconds_per_document": 0.003,
+    "seconds_per_page": 0.003,
     "sensitive_by_category": {
       "de_steuer_id": 1,
       "email_address": 1,
@@ -224,7 +224,7 @@
         "poor": 0
       }
     },
-    "total_seconds": 0.001,
+    "total_seconds": 0.003,
     "total_text_path_usd": 1.4300000000000002e-05,
     "total_vision_path_usd": null
   },
@@ -342,7 +342,11 @@
     "mask_char": "•",
     "never_reveal": [
       "card_number",
-      "ni_number"
+      "ni_number",
+      "api_key",
+      "access_token",
+      "private_key",
+      "password"
     ],
     "reveal_tail_chars": 4
   },
@@ -392,54 +396,6 @@
         "input_per_mtok_usd": 4.0,
         "max_input_tokens": 1000000,
         "model_id": "claude-opus-5-5",
-        "price_source": "imported",
-        "provider": "anthropic",
-        "supports_vision": true,
-        "tokenizer": "o200k_basex1",
-        "vision_formula": "width_height_area"
-      },
-      {
-        "accepts_pdf": true,
-        "architectures": [
-          {
-            "annual_usd": null,
-            "documents_served": 0,
-            "documents_total": 1,
-            "folder_usd": null,
-            "key": "text_layer",
-            "label": "Text layer",
-            "note": "Only documents that already carry a text layer.",
-            "per_1000_usd": null,
-            "per_document_usd": null
-          },
-          {
-            "annual_usd": null,
-            "documents_served": 1,
-            "documents_total": 1,
-            "folder_usd": 0.00143,
-            "key": "text_ocr",
-            "label": "Text + local OCR",
-            "note": "Every document. Scans are read locally first, which costs nothing to send.",
-            "per_1000_usd": 1.4300000000000002,
-            "per_document_usd": 0.00143
-          },
-          {
-            "annual_usd": null,
-            "documents_served": 0,
-            "documents_total": 1,
-            "folder_usd": null,
-            "key": "vision",
-            "label": "Vision",
-            "note": "Every document, sent as page images.",
-            "per_1000_usd": null,
-            "per_document_usd": null
-          }
-        ],
-        "batch_per_1000_usd": 0.7150000000000001,
-        "display_name": "Claude Fable 5.1",
-        "input_per_mtok_usd": 10.0,
-        "max_input_tokens": 1000000,
-        "model_id": "claude-fable-5-1",
         "price_source": "imported",
         "provider": "anthropic",
         "supports_vision": true,
@@ -687,6 +643,54 @@
         "vision_formula": "tiled_512"
       },
       {
+        "accepts_pdf": true,
+        "architectures": [
+          {
+            "annual_usd": null,
+            "documents_served": 0,
+            "documents_total": 1,
+            "folder_usd": null,
+            "key": "text_layer",
+            "label": "Text layer",
+            "note": "Only documents that already carry a text layer.",
+            "per_1000_usd": null,
+            "per_document_usd": null
+          },
+          {
+            "annual_usd": null,
+            "documents_served": 1,
+            "documents_total": 1,
+            "folder_usd": 0.001144,
+            "key": "text_ocr",
+            "label": "Text + local OCR",
+            "note": "Every document. Scans are read locally first, which costs nothing to send.",
+            "per_1000_usd": 1.1440000000000001,
+            "per_document_usd": 0.001144
+          },
+          {
+            "annual_usd": null,
+            "documents_served": 0,
+            "documents_total": 1,
+            "folder_usd": null,
+            "key": "vision",
+            "label": "Vision",
+            "note": "Every document, sent as page images.",
+            "per_1000_usd": null,
+            "per_document_usd": null
+          }
+        ],
+        "batch_per_1000_usd": 0.5720000000000001,
+        "display_name": "Claude Fable 5.2",
+        "input_per_mtok_usd": 8.0,
+        "max_input_tokens": 1000000,
+        "model_id": "claude-fable-5-2",
+        "price_source": "imported",
+        "provider": "anthropic",
+        "supports_vision": true,
+        "tokenizer": "o200k_basex1",
+        "vision_formula": "width_height_area"
+      },
+      {
         "accepts_pdf": false,
         "architectures": [
           {
@@ -781,54 +785,6 @@
         "supports_vision": false,
         "tokenizer": "o200k_basex1",
         "vision_formula": null
-      },
-      {
-        "accepts_pdf": true,
-        "architectures": [
-          {
-            "annual_usd": null,
-            "documents_served": 0,
-            "documents_total": 1,
-            "folder_usd": null,
-            "key": "text_layer",
-            "label": "Text layer",
-            "note": "Only documents that already carry a text layer.",
-            "per_1000_usd": null,
-            "per_document_usd": null
-          },
-          {
-            "annual_usd": null,
-            "documents_served": 1,
-            "documents_total": 1,
-            "folder_usd": 4.29e-05,
-            "key": "text_ocr",
-            "label": "Text + local OCR",
-            "note": "Every document. Scans are read locally first, which costs nothing to send.",
-            "per_1000_usd": 0.0429,
-            "per_document_usd": 4.29e-05
-          },
-          {
-            "annual_usd": null,
-            "documents_served": 0,
-            "documents_total": 1,
-            "folder_usd": null,
-            "key": "vision",
-            "label": "Vision",
-            "note": "Every document, sent as page images.",
-            "per_1000_usd": null,
-            "per_document_usd": null
-          }
-        ],
-        "batch_per_1000_usd": 0.02145,
-        "display_name": "Gemini 3.5 Flash Lite",
-        "input_per_mtok_usd": 0.3,
-        "max_input_tokens": 1048576,
-        "model_id": "gemini-3.5-flash-lite",
-        "price_source": "imported",
-        "provider": "gemini",
-        "supports_vision": true,
-        "tokenizer": "o200k_basex1",
-        "vision_formula": "flat_then_tiled"
       },
       {
         "accepts_pdf": true,
@@ -964,10 +920,58 @@
           }
         ],
         "batch_per_1000_usd": 0.14300000000000002,
-        "display_name": "Gemini Pro Latest",
+        "display_name": "Gemini 4 Carbon",
         "input_per_mtok_usd": 2.0,
         "max_input_tokens": 1048576,
-        "model_id": "gemini-pro-latest",
+        "model_id": "gemini-4-carbon",
+        "price_source": "imported",
+        "provider": "gemini",
+        "supports_vision": true,
+        "tokenizer": "o200k_basex1",
+        "vision_formula": "flat_then_tiled"
+      },
+      {
+        "accepts_pdf": true,
+        "architectures": [
+          {
+            "annual_usd": null,
+            "documents_served": 0,
+            "documents_total": 1,
+            "folder_usd": null,
+            "key": "text_layer",
+            "label": "Text layer",
+            "note": "Only documents that already carry a text layer.",
+            "per_1000_usd": null,
+            "per_document_usd": null
+          },
+          {
+            "annual_usd": null,
+            "documents_served": 1,
+            "documents_total": 1,
+            "folder_usd": 0.0002145,
+            "key": "text_ocr",
+            "label": "Text + local OCR",
+            "note": "Every document. Scans are read locally first, which costs nothing to send.",
+            "per_1000_usd": 0.2145,
+            "per_document_usd": 0.0002145
+          },
+          {
+            "annual_usd": null,
+            "documents_served": 0,
+            "documents_total": 1,
+            "folder_usd": null,
+            "key": "vision",
+            "label": "Vision",
+            "note": "Every document, sent as page images.",
+            "per_1000_usd": null,
+            "per_document_usd": null
+          }
+        ],
+        "batch_per_1000_usd": 0.10725,
+        "display_name": "Gemini 4 Hydrogen",
+        "input_per_mtok_usd": 1.5,
+        "max_input_tokens": 1048576,
+        "model_id": "gemini-4-hydrogen",
         "price_source": "imported",
         "provider": "gemini",
         "supports_vision": true,
@@ -1647,7 +1651,7 @@
         "vision_formula": "tiled_512"
       }
     ],
-    "prices_as_of": "2026-11-09",
+    "prices_as_of": "2026-11-16",
     "resolutions": [
       "low",
       "medium",
@@ -2343,10 +2347,10 @@
       "timing": {
         "analyse_seconds": 0.0,
         "read_seconds": 0.0,
-        "scan_seconds": 0.001,
-        "seconds_per_page": 0.001,
+        "scan_seconds": 0.003,
+        "seconds_per_page": 0.003,
         "started_at": null,
-        "total_seconds": 0.001
+        "total_seconds": 0.003
       },
       "verification": null,
       "visibility_checked": false,
@@ -2388,7 +2392,7 @@
       "affected": [],
       "area": "Price provenance",
       "severity": "info",
-      "statement": "Prices are as of 2026-11-09, from the price table complydoc carries, refreshed each week from models.dev and litellm. A provider can change a price between refreshes."
+      "statement": "Prices are as of 2026-11-16, from the price table complydoc carries, refreshed each week from models.dev and litellm. A provider can change a price between refreshes."
     },
     {
       "affected": [
@@ -2409,6 +2413,7 @@
     {
       "affected": [
         "claude-fable-5",
+        "claude-fable-5-1",
         "claude-haiku-4-5",
         "claude-haiku-4-5-20251001",
         "claude-opus-4-5",
@@ -2441,11 +2446,13 @@
         "gemini-3.1-flash-tts-preview",
         "gemini-3.1-pro-preview-customtools",
         "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
         "gemini-3.5-live-translate-preview",
         "gemini-3.6-flash",
         "gemini-flash-latest",
         "gemini-flash-lite-latest",
         "gemini-omni-flash-preview",
+        "gemini-pro-latest",
         "gemini/gemini-3.1-pro-preview",
         "gemini/gemini-3.7-flash",
         "glm-4.5",
@@ -2534,11 +2541,10 @@
       ],
       "area": "Models not costed",
       "severity": "info",
-      "statement": "123 model entr(y/ies) in pricing.yaml carry no price and are switched off, so no cost was computed for them. complydoc does not invent prices; fill them in and set last_verified to include them."
+      "statement": "126 model entr(y/ies) in pricing.yaml carry no price and are switched off, so no cost was computed for them. complydoc does not invent prices; fill them in and set last_verified to include them."
     },
     {
       "affected": [
-        "Claude Fable 5.1",
         "Claude Haiku 5.5",
         "Claude Opus 5.5",
         "Claude Sonnet 5.5"
@@ -2573,6 +2579,14 @@
     },
     {
       "affected": [
+        "Claude Fable 5.2"
+      ],
+      "area": "Token counting",
+      "severity": "info",
+      "statement": "anthropic does not publish an offline tokenizer; token counts are approximated with the o200k_base encoding."
+    },
+    {
+      "affected": [
         "DeepSeek V4 Pro",
         "DeepSeek V4.1 Flash 1017"
       ],
@@ -2582,10 +2596,10 @@
     },
     {
       "affected": [
-        "Gemini 3.5 Flash Lite",
         "Gemini 3.8 Flash",
         "Gemini 4 Argon",
-        "Gemini Pro Latest"
+        "Gemini 4 Carbon",
+        "Gemini 4 Hydrogen"
       ],
       "area": "Token counting",
       "severity": "info",
@@ -2740,13 +2754,13 @@
       "readiness",
       "sensitive"
     ],
-    "config_digest": "e9fa33925e93dd7a",
+    "config_digest": "765dfb75003882eb",
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "test/37-java-evals-page",
-      "commit": "e083e26cde7f3578fa17f15bf68a5e4f67ed4ca5",
-      "dirty": true,
+      "branch": "feat/secret-detection",
+      "commit": "50fb81cd2b2afd31821caa540d4e7a83a2e37953",
+      "dirty": false,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
@@ -2755,26 +2769,26 @@
     "duration_seconds": 0.001,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-17T10:40:20+00:00",
+    "finished_at": "2026-11-19T16:10:05+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
-    "ocr_available": true,
+    "ocr_available": false,
     "ocr_compare_used": false,
     "ocr_requested": false,
     "offline_guard": "armed",
     "page_images_used": false,
     "password_used": false,
-    "python_version": "3.13.5",
+    "python_version": "3.13.18",
     "report_detail": "summary",
     "reveal_used": false,
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-17T10:40:20+00:00",
+    "started_at": "2026-11-19T16:10:05+00:00",
     "target": "documents",
     "timeout_seconds": null,
-    "tool_version": "0.7.12",
+    "tool_version": "0.8.1",
     "verify_model": null,
     "verify_scope": null
   },
@@ -2824,7 +2838,7 @@
       "pypdf": "6.21.4"
     },
     "name": "identifiers_eu",
-    "overhead_seconds": 0.088,
+    "overhead_seconds": 0.112,
     "scan": "patterns",
     "seconds": 0.001,
     "stages": [
@@ -3015,11 +3029,11 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0,
+        "seconds": 0.0001,
         "sources": [
           "identifiers_eu.txt"
         ],
-        "started": 0.0,
+        "started": 0.0001,
         "tags": [],
         "tokens_in": 143,
         "tokens_out": 141,
@@ -3195,9 +3209,9 @@
           }
         ],
         "ids": [
-          "e49b2d9e-ca65-42e5-b91c-6e6b5ee2294c",
-          "6ae404d6-abdd-4bcc-b461-bb1f513f4008",
-          "6460fca1-1e4d-4e5b-9ec8-af990f531f47"
+          "486b49d8-8468-4d51-86a5-f67ec316ae33",
+          "298dfc93-a524-4641-9486-0a813487823a",
+          "f2492301-a02f-491a-b23a-1b2da62a2f24"
         ],
         "index": 1,
         "kind": "store",
@@ -3243,11 +3257,11 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0004,
+        "seconds": 0.0005,
         "sources": [
           "identifiers_eu.txt"
         ],
-        "started": 0.0001,
+        "started": 0.0004,
         "tags": [
           "LangChain"
         ],
@@ -3433,9 +3447,9 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0001,
+        "seconds": 0.0003,
         "sources": [],
-        "started": 0.0001,
+        "started": 0.0004,
         "tags": [
           "LangChain"
         ],

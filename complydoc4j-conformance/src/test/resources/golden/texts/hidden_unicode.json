@@ -15,7 +15,8 @@
         ],
         "instruction_reasons": [
           "decoded from invisible Unicode tag characters",
-          "tells the model to ignore its instructions"
+          "tells the model to ignore its instructions",
+          "tries to move data out through a link or the conversation"
         ],
         "fingerprint": "ct-5816979b8946666e"
       },
@@ -79,7 +80,8 @@
         ],
         "instruction_reasons": [
           "decoded from invisible Unicode tag characters",
-          "tells the model to ignore its instructions"
+          "tells the model to ignore its instructions",
+          "tries to move data out through a link or the conversation"
         ],
         "fingerprint": "ct-5816979b8946666e"
       }
