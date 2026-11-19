@@ -29,7 +29,7 @@ public final class Validators {
     public static final Set<String> FORMAT_ONLY = Set.of(
             "sort_code", "uk_postcode", "uk_phone", "plausible_dob", "in_pan", "card_issuer",
             "card_grouping", "dk_cpr", "e164_phone", "eu_vat", "nanp_phone", "ni_prefix",
-            "us_ein", "us_ssn");
+            "us_ein", "us_ssn", "real_secret");
 
     public static final Map<String, Predicate<String>> VALIDATORS;
 
@@ -71,6 +71,8 @@ public final class Validators {
         v.put("in_pan", Validators::inPan);
         v.put("ca_sin", Validators::caSin);
         v.put("au_tfn", Validators::auTfn);
+        v.put("jwt_header", Validators::jwtHeader);
+        v.put("real_secret", Validators::realSecret);
         VALIDATORS = java.util.Collections.unmodifiableMap(v);
     }
 
@@ -265,11 +267,33 @@ public final class Validators {
 
     // --- UK -------------------------------------------------------------------------
 
+    /**
+     * ISO 13616 lengths for the countries whose IBANs these documents most often carry. A
+     * country not listed is checked by mod-97 and the general length range alone.
+     */
+    private static final Map<String, Integer> IBAN_LENGTHS = Map.ofEntries(
+            Map.entry("AD", 24), Map.entry("AE", 23), Map.entry("AT", 20), Map.entry("BE", 16),
+            Map.entry("BG", 22), Map.entry("BR", 29), Map.entry("CH", 21), Map.entry("CY", 28),
+            Map.entry("CZ", 24), Map.entry("DE", 22), Map.entry("DK", 18), Map.entry("EE", 20),
+            Map.entry("ES", 24), Map.entry("FI", 18), Map.entry("FR", 27), Map.entry("GB", 22),
+            Map.entry("GI", 23), Map.entry("GR", 27), Map.entry("HR", 21), Map.entry("HU", 28),
+            Map.entry("IE", 22), Map.entry("IS", 26), Map.entry("IT", 27), Map.entry("LI", 21),
+            Map.entry("LT", 20), Map.entry("LU", 20), Map.entry("LV", 21), Map.entry("MC", 27),
+            Map.entry("MT", 31), Map.entry("NL", 18), Map.entry("NO", 15), Map.entry("PL", 28),
+            Map.entry("PT", 25), Map.entry("RO", 24), Map.entry("SA", 24), Map.entry("SE", 24),
+            Map.entry("SI", 19), Map.entry("SK", 24), Map.entry("SM", 27), Map.entry("TR", 26));
+
     public static boolean ibanMod97(String value) {
         String cleaned = Py.upper(noSpace(value));
         int length = Py.len(cleaned);
         if (length < 15 || length > 34 || !Py.allAlpha(Py.head(cleaned, 2))
                 || !Py.allDigits(Py.slice(cleaned, 2, 4))) {
+            return false;
+        }
+        // Each country's IBAN has one length. Without it, a Portuguese CPE code and the word
+        // after it pass mod-97 about once in 97 tries.
+        Integer expected = IBAN_LENGTHS.get(Py.head(cleaned, 2));
+        if (expected != null && length != expected) {
             return false;
         }
         String rearranged = Py.slice(cleaned, 4, length) + Py.head(cleaned, 4);
@@ -463,9 +487,14 @@ public final class Validators {
         return Math.floorMod(total, 11) == 0;
     }
 
+    private static final Set<String> PT_NIF_PREFIXES = Set.of("45", "70", "71", "72", "74", "75", "77", "78", "79");
+
     public static boolean ptNif(String value) {
         String digits = digits(value);
-        if (digits.length() != 9 || "125689".indexOf(digits.charAt(0)) < 0) {
+        // People: 1, 2 and, since the 2s ran out, 3; 45 for non-residents. Companies and other
+        // entities: 5, 6, 8, 9 and the 7s (estates, funds, non-resident bodies).
+        if (digits.length() != 9
+                || ("1235689".indexOf(digits.charAt(0)) < 0 && !PT_NIF_PREFIXES.contains(digits.substring(0, 2)))) {
             return false;
         }
         int total = 0;
@@ -824,5 +853,69 @@ public final class Validators {
     public static boolean auTfn(String value) {
         String digits = digits(value);
         return digits.length() == 9 && weightedMod(digits, new int[] {1, 4, 3, 7, 5, 8, 6, 9, 10}, 11) == 0;
+    }
+
+    // --- Credentials ----------------------------------------------------------------
+
+    /**
+     * A JSON Web Token: its first part decodes to a JSON object that names an {@code alg}.
+     * Three runs of base64 joined by dots are common enough in URLs and logs. The header is
+     * what makes one a token.
+     */
+    public static boolean jwtHeader(String value) {
+        int dot = value.indexOf('.');
+        String header = dot < 0 ? value : value.substring(0, dot);
+        // Python's decoder skips what is not base64; the pattern lets nothing else through.
+        String padded = header + "=".repeat(Math.floorMod(-header.length(), 4));
+        String json;
+        try {
+            byte[] decoded = java.util.Base64.getUrlDecoder().decode(padded);
+            json = java.nio.charset.StandardCharsets.UTF_8.newDecoder()
+                    .decode(java.nio.ByteBuffer.wrap(decoded)).toString();
+        } catch (IllegalArgumentException | java.nio.charset.CharacterCodingException e) {
+            return false;
+        }
+        return JsonObject.hasKey(json, "alg");
+    }
+
+    private static final Pattern PLACEHOLDER = io.github.complydoc4j.text.PyRegex.compile(
+            "(?i)^(?:x+|\\*+|\\.+|-+|_+|0+|1234\\w*|changeme\\w*|password\\w*|passw(?:or)?d?|secret\\w*|"
+            + "your[_-]?\\w*|my[_-]?\\w*|example\\w*|sample\\w*|dummy\\w*|test\\w*|placeholder\\w*|"
+            + "redacted|none|null|undefined|todo|tbd|<[^>]*>|.*example.*|\\$\\{[^}]*\\}|\\{\\{[^}]*\\}\\}|%\\w+%|\\$\\w+)$");
+
+    /**
+     * A value that could be a working secret rather than a placeholder for one. Documentation
+     * is full of {@code api_key=your_key_here} and {@code postgres://user:password@host}. A
+     * real key mixes letters and digits and does not repeat itself much.
+     */
+    public static boolean realSecret(String value) {
+        String secret = stripQuotes(value);
+        int length = Py.len(secret);
+        if (length < 8 || PLACEHOLDER.matcher(secret).find()) {
+            return false;
+        }
+        Map<Integer, Integer> counts = new LinkedHashMap<>();
+        secret.codePoints().forEach(c -> counts.merge(c, 1, Integer::sum));
+        double entropy = 0.0;
+        for (int n : counts.values()) {
+            double p = (double) n / length;
+            entropy -= p * (Math.log(p) / Math.log(2));
+        }
+        boolean hasDigit = secret.codePoints().anyMatch(Py::isDigit);
+        boolean hasLetter = secret.codePoints().anyMatch(Py::isAlpha);
+        return hasDigit && hasLetter && entropy >= 3.0;
+    }
+
+    /** {@code value.strip("'\"")}. */
+    private static String stripQuotes(String value) {
+        int start = 0;
+        int end = value.length();
+        while (start < end && (value.charAt(start) == '\'' || value.charAt(start) == '"')) {
+            start++;
+        }
+        while (end > start && (value.charAt(end - 1) == '\'' || value.charAt(end - 1) == '"')) {
+            end--;
+        }
+        return value.substring(start, end);
     }
 }

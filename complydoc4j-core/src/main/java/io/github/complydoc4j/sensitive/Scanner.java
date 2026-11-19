@@ -3,12 +3,15 @@ package io.github.complydoc4j.sensitive;
 import io.github.complydoc4j.config.CategoryConfig;
 import io.github.complydoc4j.config.Config;
 import io.github.complydoc4j.text.Py;
+import io.github.complydoc4j.text.PyRegex;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Find personal and financial identifiers, and report them masked.
@@ -32,8 +35,8 @@ public final class Scanner {
             "ni_number", "sort_code", "bank_account_number", "iban", "card_number", "phone_number",
             "date_of_birth", "vat_number", "utr", "international_phone", "us_phone", "us_ssn",
             "us_ein", "us_routing_number", "nl_bsn", "pt_nif", "pt_niss", "de_steuer_id", "be_national_number",
-            "pl_pesel", "se_personnummer", "dk_cpr", "no_fnr", "fi_hetu", "ch_ahv", "br_cpf", "br_cnpj",
-            "in_aadhaar", "ca_sin", "au_tfn");
+            "pl_pesel", "se_personnummer", "dk_cpr", "no_fnr", "fi_hetu", "fr_nir", "ch_ahv", "br_cpf", "br_cnpj",
+            "in_aadhaar", "ca_sin", "au_tfn", "api_key", "access_token", "password");
 
     public record UnscannedCategory(String category, String label, String reason) {}
 
@@ -160,9 +163,20 @@ public final class Scanner {
                 }
                 Validators.Outcome outcome = Validators.validate(text.substring(finding.start(), finding.end()),
                         category.validators(), config.checks());
-                if (outcome.passed()) {
-                    candidates.add(new Candidate(id, category, finding, outcome.names(), false, false));
+                if (!outcome.passed()) {
+                    continue;
                 }
+                if ("email_address".equals(id) && inAConnectionString(text, finding.start())) {
+                    continue;
+                }
+                // Only the identifiers that rest on a shape and a checksum: a pattern of the
+                // caller's own, such as a concept, means what it says wherever it is.
+                if ("regex".equals(category.detector())
+                        && (EXCLUSIVE_GROUP.contains(id) || !category.validators().isEmpty())
+                        && anotherFieldsValue(text, finding.start(), finding.end(), id)) {
+                    continue;
+                }
+                candidates.add(new Candidate(id, category, finding, outcome.names(), false, false));
             }
         }
 
@@ -176,6 +190,84 @@ public final class Scanner {
             silent.addAll(matches(quiet, page, text, starts, config, reveal));
         }
         return matches(reported, page, text, starts, config, reveal);
+    }
+
+    private static final Pattern CONNECTION_USER = PyRegex.compile("://[^\\s:/@]{1,64}:$");
+
+    /**
+     * Whether an email-shaped match is the {@code password@host} of
+     * {@code scheme://user:password@host}. That is a password, reported as one, and no one's
+     * email address.
+     */
+    static boolean inAConnectionString(String text, int start) {
+        Matcher match = CONNECTION_USER.matcher(text);
+        match.region(backBy(text, start, 90), start);
+        return match.find();
+    }
+
+    /**
+     * A value written after the label of another kind of field is that field, whatever its
+     * digits happen to satisfy: {@code Encomenda: 0209396017} is an order number, not a UK
+     * phone number, and {@code Tel.: 222880546} is a phone number, not a NIF.
+     */
+    private static final Pattern OTHER_FIELD = PyRegex.compile(
+            "(?i)\\b(?:invoice|fatura|factura|facture|rechnung|fattura|factuur|order|encomenda|"
+            + "requisi[çc][ãa]o|pedido|commande|bestell\\w*|auftrag|ordine|bestelnummer|purchase order|po|"
+            + "ean|gtin|isbn|imei|serial|s[ée]rie|serien\\w*|matricola|lote?|lotto|batch|charge|partij|"
+            + "tracking|policy|ap[óo]lice|polizza|ticket|ref(?:er[êe]ncia|erence|erenz|erentie|erencia|"
+            + "érence)?\\.?|kenmerk|vorgang|customer no|account ref|kundennummer|klantnummer|"
+            + "delivery note|guia(?: de remessa)?|lieferschein|job(?: number)?|licen[cs]e|"
+            + "meter|cpe|hs code|cae|build|version|commit|entidade|atcud|"
+            + "tel(?:efone|efon|efoon|[ée]phone|efono)?\\.?|phone|mobile?|telem[óo]vel|m[óo]vil|portable|"
+            + "cellulare|fax)\\b[^\\n:]{0,20}[:#]?[ \\t]*$");
+    private static final Pattern PHONE_WORDS = PyRegex.compile(
+            "(?i)\\b(?:tel|phone|mobile|telefone|telem[óo]vel|tel[ée]fono|m[óo]vil|t[ée]l[ée]phone|"
+            + "portable|telefon|mobil|telefoon|mobiel|cellulare|telefono|contacto?|fax|call)\\b");
+    private static final Pattern CARD_WORDS = PyRegex.compile(
+            "(?i)\\b(?:card|cart[ãa]o|tarjeta|carte|karte|visa|mastercard|amex|pan)\\b");
+    private static final Pattern UNSPACED_UK = PyRegex.compile("0\\d{9,10}");
+    private static final Set<String> PHONES = Set.of("phone_number", "international_phone", "us_phone");
+
+    /**
+     * Whether a pattern's match is better read as some other field's value. Values whose
+     * shape is evidence enough stay: an IBAN, an email address, and a card number written in
+     * a card's groups.
+     */
+    static boolean anotherFieldsValue(String text, int start, int end, String categoryId) {
+        String value = text.substring(start, end);
+        int lineStart = text.lastIndexOf('\n', start - 1) + 1;
+        int lineEnd = text.indexOf('\n', end);
+        String line = text.substring(lineStart, lineEnd < 0 ? text.length() : lineEnd);
+        String before = text.substring(lineStart, start);
+        boolean digits = Py.allDigits(value);
+        if ("card_number".equals(categoryId) && digits && !CARD_WORDS.matcher(line).find()) {
+            // Thirteen to nineteen digits in a row pass Luhn one time in ten: an IMEI, an
+            // EAN-13 barcode, a serial number. Unbroken, it is a card only beside a card word.
+            return true;
+        }
+        if ("phone_number".equals(categoryId) && UNSPACED_UK.matcher(value).matches()
+                && !PHONE_WORDS.matcher(line).find()) {
+            // Ten or eleven digits from a 0, unspaced, are a UK number in shape only.
+            return true;
+        }
+        if ("iban".equals(categoryId) || "email_address".equals(categoryId)
+                || ("card_number".equals(categoryId) && !digits)) {
+            return false;
+        }
+        Matcher label = OTHER_FIELD.matcher(before);
+        if (!label.find()) {
+            return false;
+        }
+        // A phone number after a phone label is where it belongs.
+        return !(PHONES.contains(categoryId) && PHONE_WORDS.matcher(label.group()).find());
+    }
+
+    private static int backBy(String text, int from, int codePoints) {
+        int at = from;
+        for (int i = 0; i < codePoints && at > 0; i++) {
+            at -= Character.charCount(text.codePointBefore(at));
+        }
+        return at;
     }
 
     private static List<Candidate> resolveOverlaps(List<Candidate> candidates) {

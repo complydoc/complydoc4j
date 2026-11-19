@@ -57,20 +57,51 @@ public final class RegexDetector {
         return findings;
     }
 
-    /** The first configured label within {@code window} characters of the match. */
+    /**
+     * The first configured label within {@code window} characters of the match.
+     *
+     * <p>The label has to be on the match's own line, or on the line above when the match's
+     * line has no words before it: a value under its column header, or alone on the line
+     * after its label. A term matches whole words only: as a substring, "ach" was found in
+     * "Machado".
+     */
     static String nearbyTerm(String text, int start, int end, List<String> terms, int window) {
         if (terms.isEmpty()) {
             return null;
         }
-        int left = backBy(text, start, window);
-        int right = forwardBy(text, end, window);
-        String haystack = Py.lower(text.substring(left, start)) + " " + Py.lower(text.substring(end, right));
+        int lineStart = text.lastIndexOf('\n', start - 1) + 1;
+        int lineEnd = text.indexOf('\n', end);
+        if (lineEnd < 0) {
+            lineEnd = text.length();
+        }
+        String before = text.substring(Math.max(lineStart, backBy(text, start, window)), start);
+        if (lineStart > 0 && !WORDS.matcher(before).find()) {
+            int above = lineStart - 1 > 0 ? text.lastIndexOf('\n', lineStart - 2) + 1 : 0;
+            before = text.substring(Math.max(above, backBy(text, start, window)), lineStart - 1) + " " + before;
+        }
+        String haystack = Py.lower(before) + " "
+                + Py.lower(text.substring(end, Math.min(lineEnd, forwardBy(text, end, window))));
         for (String term : terms) {
-            if (haystack.contains(Py.lower(term))) {
+            if (termPattern(Py.lower(term)).matcher(haystack).find()) {
                 return term;
             }
         }
         return null;
+    }
+
+    private static final Pattern WORDS = PyRegex.compile("[^\\W\\d_]{2,}");
+
+    private static final java.util.Map<String, Pattern> TERMS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** A context term as whole words. A term that ends in punctuation, {@code zip:}, ends there. */
+    private static Pattern termPattern(String term) {
+        return TERMS.computeIfAbsent(term, key -> {
+            String core = Py.strip(key);
+            boolean alnumTail = !core.isEmpty() && Py.isAlnum(core.codePointBefore(core.length()));
+            boolean alnumHead = !core.isEmpty() && Py.isAlnum(core.codePointAt(0));
+            String regex = (alnumHead ? "(?<![^\\W_])" : "") + Pattern.quote(core) + (alnumTail ? "(?![^\\W_])" : "");
+            return Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS | Pattern.UNIX_LINES);
+        });
     }
 
     private static int backBy(String text, int from, int codePoints) {
