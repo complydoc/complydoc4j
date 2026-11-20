@@ -34,7 +34,7 @@ public final class Scanner {
     private static final Set<String> EXCLUSIVE_GROUP = Set.of(
             "ni_number", "sort_code", "bank_account_number", "iban", "card_number", "phone_number",
             "date_of_birth", "vat_number", "utr", "international_phone", "us_phone", "us_ssn",
-            "us_ein", "us_routing_number", "nl_bsn", "pt_nif", "pt_niss", "de_steuer_id", "be_national_number",
+            "us_ein", "us_routing_number", "nl_bsn", "pt_nif", "pt_niss", "pt_civil_id", "pt_phone", "de_steuer_id", "be_national_number",
             "pl_pesel", "se_personnummer", "dk_cpr", "no_fnr", "fi_hetu", "fr_nir", "ch_ahv", "br_cpf", "br_cnpj",
             "in_aadhaar", "ca_sin", "au_tfn", "api_key", "access_token", "password");
 
@@ -226,7 +226,7 @@ public final class Scanner {
     private static final Pattern CARD_WORDS = PyRegex.compile(
             "(?i)\\b(?:card|cart[ãa]o|tarjeta|carte|karte|visa|mastercard|amex|pan)\\b");
     private static final Pattern UNSPACED_UK = PyRegex.compile("0\\d{9,10}");
-    private static final Set<String> PHONES = Set.of("phone_number", "international_phone", "us_phone");
+    private static final Set<String> PHONES = Set.of("phone_number", "international_phone", "us_phone", "pt_phone");
 
     /**
      * Whether a pattern's match is better read as some other field's value. Values whose
