@@ -18,13 +18,41 @@
       }
     ],
     "masked": "Rechnung Nr. 2026-0417\n\nBitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: •••• •••• ••••\n•••• ••30 00\nBIC: COBADEFFXXX\n\nZahlbar innerhalb von 14 Tagen.\n",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Rechnung Nr. 2026-0417\n\nBitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: •••• •••• ••••\n•••• ••30 00\nBIC: COBADEFFXXX\n\nZahlbar innerhalb von 14 Tagen.\n",
+      "verdict": "stop",
+      "masked": 1,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {
+        "IBAN": 1
+      },
+      "sensitive": [
+        "IBAN"
+      ],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   },
   {
     "text": "Rechnung Nr. 2026-0417",
     "matches": [],
     "masked": "Rechnung Nr. 2026-0417",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Rechnung Nr. 2026-0417",
+      "verdict": "ready",
+      "masked": 0,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {},
+      "sensitive": [],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   },
   {
     "text": "Bitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: DE89 3704 0044\n0532 0130 00\nBIC: COBADEFFXXX",
@@ -45,12 +73,40 @@
       }
     ],
     "masked": "Bitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: •••• •••• ••••\n•••• ••30 00\nBIC: COBADEFFXXX",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Bitte überweisen Sie den Betrag auf folgendes Konto:\nIBAN: •••• •••• ••••\n•••• ••30 00\nBIC: COBADEFFXXX",
+      "verdict": "stop",
+      "masked": 1,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {
+        "IBAN": 1
+      },
+      "sensitive": [
+        "IBAN"
+      ],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   },
   {
     "text": "Zahlbar innerhalb von 14 Tagen.\n",
     "matches": [],
     "masked": "Zahlbar innerhalb von 14 Tagen.\n",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Zahlbar innerhalb von 14 Tagen.\n",
+      "verdict": "ready",
+      "masked": 0,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {},
+      "sensitive": [],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   }
 ]

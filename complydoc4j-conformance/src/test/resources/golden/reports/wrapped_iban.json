@@ -39,7 +39,7 @@
     "readiness_bands": {
       "ready": 1
     },
-    "scan_seconds": 0.002,
+    "scan_seconds": 0.001,
     "seconds_per_document": 0.002,
     "seconds_per_page": 0.002,
     "sensitive_by_category": {
@@ -2120,7 +2120,7 @@
       "timing": {
         "analyse_seconds": 0.001,
         "read_seconds": 0.0,
-        "scan_seconds": 0.002,
+        "scan_seconds": 0.001,
         "seconds_per_page": 0.002,
         "started_at": null,
         "total_seconds": 0.002
@@ -2527,13 +2527,13 @@
       "readiness",
       "sensitive"
     ],
-    "config_digest": "765dfb75003882eb",
+    "config_digest": "cb754883de370483",
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feat/secret-detection",
-      "commit": "50fb81cd2b2afd31821caa540d4e7a83a2e37953",
-      "dirty": false,
+      "branch": "feature/gateway-primitive",
+      "commit": "3fae291524d79520dff6277de7dfd90bf9d8e9c6",
+      "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
@@ -2542,7 +2542,7 @@
     "duration_seconds": 0.001,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-19T16:10:06+00:00",
+    "finished_at": "2026-11-21T14:59:52+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2558,10 +2558,10 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-19T16:10:06+00:00",
+    "started_at": "2026-11-21T14:59:52+00:00",
     "target": "documents",
     "timeout_seconds": null,
-    "tool_version": "0.8.1",
+    "tool_version": "0.8.2",
     "verify_model": null,
     "verify_scope": null
   },
@@ -2611,7 +2611,7 @@
       "pypdf": "6.21.4"
     },
     "name": "wrapped_iban",
-    "overhead_seconds": 0.096,
+    "overhead_seconds": 0.076,
     "scan": "patterns",
     "seconds": 0.001,
     "stages": [
@@ -2702,11 +2702,11 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0001,
+        "seconds": 0.0,
         "sources": [
           "wrapped_iban.txt"
         ],
-        "started": 0.0001,
+        "started": 0.0,
         "tags": [],
         "tokens_in": 60,
         "tokens_out": 58,
@@ -2762,9 +2762,9 @@
           }
         ],
         "ids": [
-          "0f91536d-9048-4e4d-ba04-54f5886db4a3",
-          "97b23147-860c-4741-bfa6-bf5070595683",
-          "a68e2fd8-a2e2-42c6-b725-a269875951c9"
+          "ba98fabd-b95d-4e49-a7b6-8b5e90be8961",
+          "be3c24f2-f9b2-41ff-8389-ca332d92ed8e",
+          "c8ef43e7-4779-4090-a4ba-d6ac8ee669e2"
         ],
         "index": 1,
         "kind": "store",
@@ -2814,7 +2814,7 @@
         "sources": [
           "wrapped_iban.txt"
         ],
-        "started": 0.0004,
+        "started": 0.0002,
         "tags": [
           "LangChain"
         ],
@@ -2900,9 +2900,9 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0005,
+        "seconds": 0.0003,
         "sources": [],
-        "started": 0.0005,
+        "started": 0.0002,
         "tags": [
           "LangChain"
         ],

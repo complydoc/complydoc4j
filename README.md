@@ -36,6 +36,20 @@ Report read = Complydoc4j.audit(items, "my-reader");      // documents you have 
 Complydoc4j.write(report, Path.of(".complydoc/contracts.json"));
 ```
 
+## The gateway
+
+One object between your documents and any model, agent or tool: identifiers masked, hidden
+passages and instructions to a model taken out, the same answer as `cd.Gateway` in Python.
+
+```java
+Gateway gateway = Gateway.create();
+Gateway.Result safe = gateway.filter(retrievedChunk);    // any text
+Gateway.Result file = gateway.read(Path.of("contract.pdf"));
+send(safe.text());                                        // safe.verdict(), safe.summary()
+
+gateway.blocking().filter(text);                          // throws Gateway.Blocked on a planted instruction
+```
+
 ## LangChain4j
 
 Change `EmbeddingStoreIngestor.builder()` to `observation.ingestor()`:

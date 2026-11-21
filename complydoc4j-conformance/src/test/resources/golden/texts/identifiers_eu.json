@@ -156,13 +156,58 @@
       }
     ],
     "masked": "Ficha de cliente / Kundendaten\n\nNome: Ana Silva\nNIF: •••••6789\nIBAN: •••• •••• •••• •••• •••• •015 4\nDNI: •••••678Z\nSteuer-ID: •••••••2719\nNIR: • •• •• •• ••• •89 46\nBSN: •••••2333\nPESEL: •••••••1359\nEmail: •••.•••••@•••••le.pt\nTelefone: +••• ••• ••5 678\nVAT: •••••••6789\nSSN: •••-••-6789\n\nOs dados acima são confidenciais.\n",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Ficha de cliente / Kundendaten\n\nNome: Ana Silva\nNIF: •••••6789\nIBAN: •••• •••• •••• •••• •••• •015 4\nDNI: •••••678Z\nSteuer-ID: •••••••2719\nNIR: • •• •• •• ••• •89 46\nBSN: •••••2333\nPESEL: •••••••1359\nEmail: •••.•••••@•••••le.pt\nTelefone: +••• ••• ••5 678\nVAT: •••••••6789\nSSN: •••-••-6789\n\nOs dados acima são confidenciais.\n",
+      "verdict": "stop",
+      "masked": 11,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {
+        "Dutch BSN": 1,
+        "EU VAT number": 1,
+        "Email address": 1,
+        "French social security number": 1,
+        "German tax identification number": 1,
+        "IBAN": 1,
+        "International phone number": 1,
+        "Polish PESEL": 1,
+        "Portuguese NIF": 1,
+        "Spanish DNI or NIE": 1,
+        "US Social Security number": 1
+      },
+      "sensitive": [
+        "Dutch BSN",
+        "French social security number",
+        "German tax identification number",
+        "IBAN",
+        "Polish PESEL",
+        "Portuguese NIF",
+        "Spanish DNI or NIE",
+        "US Social Security number"
+      ],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   },
   {
     "text": "Ficha de cliente / Kundendaten",
     "matches": [],
     "masked": "Ficha de cliente / Kundendaten",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Ficha de cliente / Kundendaten",
+      "verdict": "ready",
+      "masked": 0,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {},
+      "sensitive": [],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   },
   {
     "text": "Nome: Ana Silva\nNIF: 123456789\nIBAN: PT50 0002 0123 1234 5678 9015 4\nDNI: 12345678Z\nSteuer-ID: 86095742719\nNIR: 1 84 12 76 451 089 46\nBSN: 111222333\nPESEL: 44051401359\nEmail: ana.silva@example.pt\nTelefone: +351 912 345 678\nVAT: DE123456789\nSSN: 123-45-6789",
@@ -321,12 +366,57 @@
       }
     ],
     "masked": "Nome: Ana Silva\nNIF: •••••6789\nIBAN: •••• •••• •••• •••• •••• •015 4\nDNI: •••••678Z\nSteuer-ID: •••••••2719\nNIR: • •• •• •• ••• •89 46\nBSN: •••••2333\nPESEL: •••••••1359\nEmail: •••.•••••@•••••le.pt\nTelefone: +••• ••• ••5 678\nVAT: •••••••6789\nSSN: •••-••-6789",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Nome: Ana Silva\nNIF: •••••6789\nIBAN: •••• •••• •••• •••• •••• •015 4\nDNI: •••••678Z\nSteuer-ID: •••••••2719\nNIR: • •• •• •• ••• •89 46\nBSN: •••••2333\nPESEL: •••••••1359\nEmail: •••.•••••@•••••le.pt\nTelefone: +••• ••• ••5 678\nVAT: •••••••6789\nSSN: •••-••-6789",
+      "verdict": "stop",
+      "masked": 11,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {
+        "Dutch BSN": 1,
+        "EU VAT number": 1,
+        "Email address": 1,
+        "French social security number": 1,
+        "German tax identification number": 1,
+        "IBAN": 1,
+        "International phone number": 1,
+        "Polish PESEL": 1,
+        "Portuguese NIF": 1,
+        "Spanish DNI or NIE": 1,
+        "US Social Security number": 1
+      },
+      "sensitive": [
+        "Dutch BSN",
+        "French social security number",
+        "German tax identification number",
+        "IBAN",
+        "Polish PESEL",
+        "Portuguese NIF",
+        "Spanish DNI or NIE",
+        "US Social Security number"
+      ],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   },
   {
     "text": "Os dados acima são confidenciais.\n",
     "matches": [],
     "masked": "Os dados acima são confidenciais.\n",
-    "hidden": []
+    "hidden": [],
+    "gateway": {
+      "text": "Os dados acima são confidenciais.\n",
+      "verdict": "ready",
+      "masked": 0,
+      "removed": 0,
+      "invisible": 0,
+      "identifiers": {},
+      "sensitive": [],
+      "hidden": 0,
+      "instruction": false,
+      "unscanned": []
+    }
   }
 ]
