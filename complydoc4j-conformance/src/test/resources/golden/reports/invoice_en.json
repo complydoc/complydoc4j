@@ -34,18 +34,18 @@
     "pages_total": 1,
     "pages_unreadable": 0,
     "projected_seconds": {
-      "100": 0.4,
-      "1000": 4.0,
-      "10000": 40.0,
-      "100000": 400.0
+      "100": 0.3,
+      "1000": 3.0,
+      "10000": 30.0,
+      "100000": 300.0
     },
     "read_seconds": 0.0,
     "readiness_bands": {
       "ready": 1
     },
-    "scan_seconds": 0.003,
-    "seconds_per_document": 0.004,
-    "seconds_per_page": 0.004,
+    "scan_seconds": 0.002,
+    "seconds_per_document": 0.003,
+    "seconds_per_page": 0.003,
     "sensitive_by_category": {
       "card_number": 1,
       "iban": 1,
@@ -218,7 +218,7 @@
         "poor": 0
       }
     },
-    "total_seconds": 0.004,
+    "total_seconds": 0.003,
     "total_text_path_usd": 8.9e-06,
     "total_vision_path_usd": null
   },
@@ -2208,10 +2208,10 @@
       "timing": {
         "analyse_seconds": 0.001,
         "read_seconds": 0.0,
-        "scan_seconds": 0.003,
-        "seconds_per_page": 0.004,
+        "scan_seconds": 0.002,
+        "seconds_per_page": 0.003,
         "started_at": null,
-        "total_seconds": 0.004
+        "total_seconds": 0.003
       },
       "verification": null,
       "visibility_checked": false,
@@ -2615,13 +2615,13 @@
       "readiness",
       "sensitive"
     ],
-    "config_digest": "765dfb75003882eb",
+    "config_digest": "cb754883de370483",
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feat/secret-detection",
-      "commit": "50fb81cd2b2afd31821caa540d4e7a83a2e37953",
-      "dirty": false,
+      "branch": "feature/gateway-primitive",
+      "commit": "3fae291524d79520dff6277de7dfd90bf9d8e9c6",
+      "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
@@ -2630,7 +2630,7 @@
     "duration_seconds": 0.001,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-19T16:10:05+00:00",
+    "finished_at": "2026-11-21T14:59:52+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2646,10 +2646,10 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-19T16:10:05+00:00",
+    "started_at": "2026-11-21T14:59:52+00:00",
     "target": "documents",
     "timeout_seconds": null,
-    "tool_version": "0.8.1",
+    "tool_version": "0.8.2",
     "verify_model": null,
     "verify_scope": null
   },
@@ -2699,7 +2699,7 @@
       "pypdf": "6.21.4"
     },
     "name": "invoice_en",
-    "overhead_seconds": 0.102,
+    "overhead_seconds": 0.078,
     "scan": "patterns",
     "seconds": 0.001,
     "stages": [
@@ -2810,11 +2810,11 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0001,
+        "seconds": 0.0,
         "sources": [
           "invoice_en.txt"
         ],
-        "started": 0.0001,
+        "started": 0.0,
         "tags": [],
         "tokens_in": 89,
         "tokens_out": 88,
@@ -2894,9 +2894,9 @@
           }
         ],
         "ids": [
-          "3d583bb6-b61a-4d65-a6c0-911fcf24e9e2",
-          "6bef53a8-281f-4462-a5d8-eecad6ce9240",
-          "d06aa4a3-25f5-40f9-b783-d827fec138bd"
+          "e028c80f-3bb6-4aa1-9967-cf9951469d94",
+          "b94f876d-7d36-4e79-a9b6-70f0081ea3b3",
+          "35ba430d-232c-4d25-90a1-5f7417d718f4"
         ],
         "index": 1,
         "kind": "store",
@@ -2942,7 +2942,7 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0004,
+        "seconds": 0.0003,
         "sources": [
           "invoice_en.txt"
         ],
@@ -3052,9 +3052,9 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0003,
+        "seconds": 0.0002,
         "sources": [],
-        "started": 0.0003,
+        "started": 0.0002,
         "tags": [
           "LangChain"
         ],
