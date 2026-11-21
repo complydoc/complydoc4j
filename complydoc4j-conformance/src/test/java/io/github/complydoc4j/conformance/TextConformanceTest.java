@@ -2,6 +2,7 @@ package io.github.complydoc4j.conformance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import io.github.complydoc4j.Gateway;
 import io.github.complydoc4j.config.Config;
 import io.github.complydoc4j.config.ConfigLoader;
 import io.github.complydoc4j.hidden.ContentFinding;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.TestFactory;
 class TextConformanceTest {
 
     private static final Config PATTERNS = ConfigLoader.shipped().patternsOnly();
+    private static final Gateway GATEWAY = Gateway.create(PATTERNS);
 
     @Test
     void theShippedConfigurationIsPythonsByteForByte() {
@@ -75,6 +77,11 @@ class TextConformanceTest {
                 tests.add(DynamicTest.dynamicTest(name + ": hidden", () -> assertEquals(
                         canonical(answer.get("hidden")),
                         canonical(findings(HiddenCheck.findHidden(text, PATTERNS, false))))));
+                // Golden data written by a complydoc from before the gateway has no answer to check.
+                if (answer.containsKey("gateway")) {
+                    tests.add(DynamicTest.dynamicTest(name + ": gateway", () -> assertEquals(
+                            canonical(answer.get("gateway")), canonical(gateway(GATEWAY.filter(text))))));
+                }
             }
             return tests.stream();
         });
@@ -114,6 +121,21 @@ class TextConformanceTest {
             out.add(map);
         }
         return out;
+    }
+
+    private static Map<String, Object> gateway(Gateway.Result r) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("text", r.text());
+        map.put("verdict", r.verdict().code());
+        map.put("masked", r.masked());
+        map.put("removed", r.removed());
+        map.put("invisible", r.invisible());
+        map.put("identifiers", new java.util.TreeMap<>(r.identifiers()));
+        map.put("sensitive", r.sensitive());
+        map.put("hidden", r.hidden());
+        map.put("instruction", r.instruction());
+        map.put("unscanned", r.unscanned());
+        return map;
     }
 
     /** Both sides written the same way, so a difference reads as a line of JSON. */

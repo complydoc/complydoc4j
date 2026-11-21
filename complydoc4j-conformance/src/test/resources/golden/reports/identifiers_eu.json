@@ -30,18 +30,18 @@
     "pages_total": 1,
     "pages_unreadable": 0,
     "projected_seconds": {
-      "100": 0.3,
-      "1000": 3.0,
-      "10000": 30.0,
-      "100000": 300.0
+      "100": 0.2,
+      "1000": 2.0,
+      "10000": 20.0,
+      "100000": 200.0
     },
     "read_seconds": 0.0,
     "readiness_bands": {
       "ready": 1
     },
-    "scan_seconds": 0.003,
-    "seconds_per_document": 0.003,
-    "seconds_per_page": 0.003,
+    "scan_seconds": 0.002,
+    "seconds_per_document": 0.002,
+    "seconds_per_page": 0.002,
     "sensitive_by_category": {
       "de_steuer_id": 1,
       "email_address": 1,
@@ -224,7 +224,7 @@
         "poor": 0
       }
     },
-    "total_seconds": 0.003,
+    "total_seconds": 0.002,
     "total_text_path_usd": 1.4300000000000002e-05,
     "total_vision_path_usd": null
   },
@@ -2347,10 +2347,10 @@
       "timing": {
         "analyse_seconds": 0.0,
         "read_seconds": 0.0,
-        "scan_seconds": 0.003,
-        "seconds_per_page": 0.003,
+        "scan_seconds": 0.002,
+        "seconds_per_page": 0.002,
         "started_at": null,
-        "total_seconds": 0.003
+        "total_seconds": 0.002
       },
       "verification": null,
       "visibility_checked": false,
@@ -2754,13 +2754,13 @@
       "readiness",
       "sensitive"
     ],
-    "config_digest": "765dfb75003882eb",
+    "config_digest": "cb754883de370483",
     "config_dir": "<complydoc>/src/complydoc/config",
     "content_sent_to": [],
     "context": {
-      "branch": "feat/secret-detection",
-      "commit": "50fb81cd2b2afd31821caa540d4e7a83a2e37953",
-      "dirty": false,
+      "branch": "feature/gateway-primitive",
+      "commit": "3fae291524d79520dff6277de7dfd90bf9d8e9c6",
+      "dirty": true,
       "repository": "github.com/complydoc/complydoc",
       "url": null,
       "workflow": null
@@ -2769,7 +2769,7 @@
     "duration_seconds": 0.001,
     "extracted_text_used": true,
     "extractor": "documents",
-    "finished_at": "2026-11-19T16:10:05+00:00",
+    "finished_at": "2026-11-21T14:59:52+00:00",
     "jobs": 1,
     "monthly_volume": null,
     "ner_available": false,
@@ -2785,10 +2785,10 @@
     "sample_size": null,
     "sampled_from": null,
     "schema_version": 27,
-    "started_at": "2026-11-19T16:10:05+00:00",
+    "started_at": "2026-11-21T14:59:52+00:00",
     "target": "documents",
     "timeout_seconds": null,
-    "tool_version": "0.8.1",
+    "tool_version": "0.8.2",
     "verify_model": null,
     "verify_scope": null
   },
@@ -2838,7 +2838,7 @@
       "pypdf": "6.21.4"
     },
     "name": "identifiers_eu",
-    "overhead_seconds": 0.112,
+    "overhead_seconds": 0.078,
     "scan": "patterns",
     "seconds": 0.001,
     "stages": [
@@ -3029,11 +3029,11 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0001,
+        "seconds": 0.0,
         "sources": [
           "identifiers_eu.txt"
         ],
-        "started": 0.0001,
+        "started": 0.0,
         "tags": [],
         "tokens_in": 143,
         "tokens_out": 141,
@@ -3209,9 +3209,9 @@
           }
         ],
         "ids": [
-          "486b49d8-8468-4d51-86a5-f67ec316ae33",
-          "298dfc93-a524-4641-9486-0a813487823a",
-          "f2492301-a02f-491a-b23a-1b2da62a2f24"
+          "90dc3f77-8672-4cc3-96e0-fd6303b99cb7",
+          "9c2b82a9-0ef1-472f-bd48-107e4ed34bdc",
+          "b00874ad-6ec2-4baa-b6ac-180a267642fc"
         ],
         "index": 1,
         "kind": "store",
@@ -3257,11 +3257,11 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0005,
+        "seconds": 0.0003,
         "sources": [
           "identifiers_eu.txt"
         ],
-        "started": 0.0004,
+        "started": 0.0002,
         "tags": [
           "LangChain"
         ],
@@ -3447,9 +3447,9 @@
           }
         ],
         "scanned": "patterns",
-        "seconds": 0.0003,
+        "seconds": 0.0002,
         "sources": [],
-        "started": 0.0004,
+        "started": 0.0002,
         "tags": [
           "LangChain"
         ],
