@@ -76,6 +76,40 @@ public final class Masking {
      * breaks inside it stay, so the lines are as they were.
      */
     public static Masked maskMatches(String text, List<SensitiveMatch> matches) {
+        return maskMatches(text, matches, null);
+    }
+
+    /**
+     * A stretch of text that was masked, in code points, and the matches that cover it,
+     * strongest first. Matches that overlap are one stretch, so a value revealed later never
+     * brings a stronger one's characters with it unseen.
+     */
+    public static final class Placed {
+        private int start;
+        private int end;
+        private final List<SensitiveMatch> matches = new ArrayList<>();
+
+        Placed(int start, int end, SensitiveMatch match) {
+            this.start = start;
+            this.end = end;
+            matches.add(match);
+        }
+
+        public int start() {
+            return start;
+        }
+
+        public int end() {
+            return end;
+        }
+
+        public List<SensitiveMatch> matches() {
+            return List.copyOf(matches);
+        }
+    }
+
+    /** As {@link #maskMatches(String, List)}, adding each stretch covered to {@code placed}. */
+    public static Masked maskMatches(String text, List<SensitiveMatch> matches, List<Placed> placed) {
         if (matches.isEmpty()) {
             return new Masked(text, 0, 0);
         }
@@ -131,12 +165,38 @@ public final class Masking {
             for (int position = start; position < end; position++) {
                 covered.add(position);
             }
+            if (placed != null) {
+                place(placed, start, end, match);
+            }
             replaced++;
             if ("confirmed".equals(match.evidence())) {
                 confirmed++;
             }
         }
         return new Masked(new String(chars, 0, chars.length), replaced, confirmed);
+    }
+
+    private static void place(List<Placed> placed, int start, int end, SensitiveMatch match) {
+        List<Placed> overlapping = new ArrayList<>();
+        for (Placed p : placed) {
+            if (p.start < end && start < p.end) {
+                overlapping.add(p);
+            }
+        }
+        if (overlapping.isEmpty()) {
+            placed.add(new Placed(start, end, match));
+            return;
+        }
+        Placed first = overlapping.get(0);
+        first.start = Math.min(first.start, start);
+        first.end = Math.max(first.end, end);
+        for (Placed other : overlapping.subList(1, overlapping.size())) {
+            first.matches.addAll(other.matches);
+            first.start = Math.min(first.start, other.start);
+            first.end = Math.max(first.end, other.end);
+            placed.remove(other);
+        }
+        first.matches.add(match);
     }
 
     private static int rank(String evidence) {

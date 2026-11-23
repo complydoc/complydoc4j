@@ -13,9 +13,13 @@ import io.github.complydoc4j.text.Py;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
+import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -37,33 +41,75 @@ import java.util.regex.Pattern;
  *
  * <p>{@code Gateway.create().blocking()} throws {@link Blocked} instead of returning text that
  * held an instruction to a model, or a file nothing could be read from.
+ *
+ * <p>{@code Gateway.create().numbered()} gives each masked value a number, as
+ * {@code [#12 IBAN ••••4521]}, so a model can ask for one by it. {@link #reveal} puts that
+ * request to a person, through a function of yours that asks them, and gives the one value only
+ * if they allow it (see {@link Unmask}):
+ *
+ * <pre>{@code
+ * Gateway gateway = Gateway.create().numbered();
+ * Gateway.Result safe = gateway.read(Path.of("contract.pdf"));
+ * Optional<String> iban = gateway.reveal(safe, 12, "to fill in the payment", request -> askTheUser(request.question()));
+ * }</pre>
  */
 public final class Gateway {
 
     /** What stands in the text where a hidden passage was taken out. */
     public static final String REMOVED = "[hidden text removed]";
 
+    /** Results whose masked values a gateway keeps for {@link #reveal}, the oldest let go first. */
+    static final int KEPT_VALUES = 256;
+
     private final Config config;
     private final boolean block;
+    private final boolean numbered;
+    private final Unmask.RevealLog log;
+    private final Map<String, Kept> kept = java.util.Collections.synchronizedMap(
+            new LinkedHashMap<>(16, 0.75f, false) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, Kept> eldest) {
+                    return size() > KEPT_VALUES;
+                }
+            });
 
-    private Gateway(Config config, boolean block) {
+    private record Kept(Unmask.Values values, String source) {}
+
+    private Gateway(Config config, boolean block, boolean numbered, Path revealLog) {
         this.config = config;
         this.block = block;
+        this.numbered = numbered;
+        this.log = new Unmask.RevealLog(revealLog);
     }
 
     /** A gateway with the shipped configuration, the same files the Python package reads. */
     public static Gateway create() {
-        return new Gateway(ConfigLoader.shipped(), false);
+        return create(ConfigLoader.shipped());
     }
 
     /** A gateway with a configuration of your own. */
     public static Gateway create(Config config) {
-        return new Gateway(config, false);
+        return new Gateway(config, false, false, Unmask.REVEAL_LOG);
     }
 
     /** The same gateway, throwing {@link Blocked} on an instruction to a model or an unreadable file. */
     public Gateway blocking() {
-        return new Gateway(config, true);
+        return new Gateway(config, true, numbered, log.path());
+    }
+
+    /** The same gateway, each masked value carrying a number a model can ask for, {@code [#12 IBAN ••••]}. */
+    public Gateway numbered() {
+        return new Gateway(config, block, true, log.path());
+    }
+
+    /** The same gateway, logging requests to {@link #reveal} to {@code path}; null keeps no log. */
+    public Gateway revealLog(Path path) {
+        return new Gateway(config, block, numbered, path);
+    }
+
+    /** The log of every request to {@link #reveal}, without the values. */
+    public Unmask.RevealLog log() {
+        return log;
     }
 
     /** How far the original could be trusted; the text returned is cleaned whatever it says. */
@@ -92,16 +138,34 @@ public final class Gateway {
      * @param invisible invisible characters taken out
      * @param unscanned categories that could not be scanned, such as names with no name model
      * @param pages for a file, the text of each page; {@code text} is them joined
+     * @param spans on a {@link #numbered()} gateway, each masked value's number, kind and the
+     *     text around it
+     * @param key which reading this is, for {@link #reveal}
      */
     public record Result(String text, Verdict verdict, int masked, int removed, int invisible,
             Map<String, Integer> identifiers, List<String> sensitive, int hidden, boolean instruction,
-            String unread, List<String> unscanned, List<String> pages, String source) {
+            String unread, List<String> unscanned, List<String> pages, String source,
+            List<Unmask.MaskedSpan> spans, String key) {
 
         public Result {
             identifiers = Map.copyOf(identifiers);
             sensitive = List.copyOf(sensitive);
             unscanned = List.copyOf(unscanned);
             pages = List.copyOf(pages);
+            spans = List.copyOf(spans);
+            key = key == null ? "" : key;
+        }
+
+        public Result(String text, Verdict verdict, int masked, int removed, int invisible,
+                Map<String, Integer> identifiers, List<String> sensitive, int hidden, boolean instruction,
+                String unread, List<String> unscanned, List<String> pages, String source) {
+            this(text, verdict, masked, removed, invisible, identifiers, sensitive, hidden, instruction, unread,
+                    unscanned, pages, source, List.of(), "");
+        }
+
+        Result with(String text, List<String> pages, List<Unmask.MaskedSpan> spans, String key) {
+            return new Result(text, verdict, masked, removed, invisible, identifiers, sensitive, hidden,
+                    instruction, unread, unscanned, pages, source, spans, key);
         }
 
         /** True when nothing at all was found: the text is the original. */
@@ -159,10 +223,19 @@ public final class Gateway {
 
     /** {@code text} with identifiers masked and hidden or instruction-like passages taken out. */
     public Result filter(String text) {
-        return passed(cleaned(text));
+        Cleaned cleaned = cleaned(text);
+        List<Unmask.Stretch> found = Unmask.stretches(null, cleaned.input(), cleaned.placed());
+        Unmask.Values values = Unmask.Values.number(found, Map.of(0, cleaned.result().text()),
+                config.sensitive().masking());
+        Result result = cleaned.result();
+        String shown = numbered ? values.marked(null, result.text()) : result.text();
+        return passed(kept(result.with(shown, result.pages(), List.of(), ""), values, null));
     }
 
-    private Result cleaned(String text) {
+    /** A text's result, the text masking was given, and the stretches it covered. */
+    private record Cleaned(Result result, String input, List<Masking.Placed> placed) {}
+
+    private Cleaned cleaned(String text) {
         List<ContentFinding> hidden = HiddenCheck.findHidden(text, config, false);
         // Invisible characters out first, so `ig​nore previous instructions` is found.
         String clean = Smuggled.stripInvisible(text);
@@ -173,7 +246,8 @@ public final class Gateway {
         }
         Scanner.TextScan scan = Scanner.scanText(clean, config.sensitive());
         Scanner.TextScan covering = Scanner.scanText(clean, config.sensitive(), false, true);
-        Masking.Masked masked = Masking.maskMatches(clean, covering.matches());
+        List<Masking.Placed> placed = new ArrayList<>();
+        Masking.Masked masked = Masking.maskMatches(clean, covering.matches(), placed);
         Map<String, Integer> identifiers = new TreeMap<>();
         TreeSet<String> sensitive = new TreeSet<>();
         for (SensitiveMatch match : scan.matches()) {
@@ -185,10 +259,10 @@ public final class Gateway {
         boolean instruction = hidden.stream().anyMatch(f -> !f.instruction().equals("none"));
         Verdict verdict = !hidden.isEmpty() || !sensitive.isEmpty() ? Verdict.STOP
                 : !identifiers.isEmpty() ? Verdict.CAREFUL : Verdict.READY;
-        return new Result(masked.text(), verdict, masked.replaced(), spans.size(),
+        return new Cleaned(new Result(masked.text(), verdict, masked.replaced(), spans.size(),
                 Py.len(text) - Py.len(Smuggled.stripInvisible(text)), identifiers, List.copyOf(sensitive),
                 hidden.size(), instruction, null, List.copyOf(new TreeSet<>(covering.unscanned().keySet())),
-                List.of(), null);
+                List.of(), null), clean, placed);
     }
 
     /**
@@ -219,6 +293,8 @@ public final class Gateway {
         TreeSet<String> sensitive = new TreeSet<>();
         TreeSet<String> unscanned = new TreeSet<>();
         List<String> texts = new ArrayList<>();
+        List<Unmask.Stretch> found = new ArrayList<>();
+        Map<Integer, String> byPage = new LinkedHashMap<>();
         boolean anyText = false;
         for (HiddenCheck.Page page : pages) {
             String text = page.text();
@@ -230,7 +306,10 @@ public final class Gateway {
                 }
             }
             anyText |= !Py.blank(text);
-            Result one = cleaned(text);
+            Cleaned cleaned = cleaned(text);
+            Result one = cleaned.result();
+            found.addAll(Unmask.stretches(page.number(), cleaned.input(), cleaned.placed()));
+            byPage.put(page.number(), one.text());
             masked += one.masked();
             removed += one.removed();
             invisible += one.invisible();
@@ -247,12 +326,53 @@ public final class Gateway {
         String unread = read.warnings().isEmpty() ? null : String.join("; ", read.warnings());
         Verdict verdict = hidden > 0 || !sensitive.isEmpty() ? Verdict.STOP
                 : !identifiers.isEmpty() || unread != null ? Verdict.CAREFUL : Verdict.READY;
+        Unmask.Values values = Unmask.Values.number(found, byPage, config.sensitive().masking());
+        if (numbered) {
+            for (int i = 0; i < texts.size(); i++) {
+                texts.set(i, values.marked(i + 1, texts.get(i)));
+            }
+        }
         StringBuilder joined = new StringBuilder();
         for (int i = 0; i < texts.size(); i++) {
             joined.append(i > 0 ? "\n\n" : "").append("--- page ").append(i + 1).append(" ---\n").append(texts.get(i));
         }
-        return passed(new Result(joined.toString(), verdict, masked, removed, invisible, identifiers,
-                List.copyOf(sensitive), hidden, instruction, unread, List.copyOf(unscanned), texts, source));
+        return passed(kept(new Result(joined.toString(), verdict, masked, removed, invisible, identifiers,
+                List.copyOf(sensitive), hidden, instruction, unread, List.copyOf(unscanned), texts, source),
+                values, source));
+    }
+
+    /**
+     * One masked value of {@code result}, if the person allows it; empty if they decline.
+     *
+     * <p>{@code approve} is given a {@link Unmask.RevealRequest}, whose {@code question()} says
+     * what is asked in plain words, and returns whether the person allowed it. It must ask the
+     * person: the model that wants the value cannot allow it. A category never revealed throws
+     * {@link Unmask.UnmaskException} without asking. Every request is logged, without the value.
+     */
+    public Optional<String> reveal(Result result, int id, String reason, Predicate<Unmask.RevealRequest> approve) {
+        Kept found = kept.get(result.key());
+        if (found == null) {
+            throw new Unmask.UnmaskException(
+                    "That result was not made by this gateway, or is too old to reveal from.");
+        }
+        Unmask.MaskedSpan span = found.values().span(id);
+        Unmask.RevealRequest request = new Unmask.RevealRequest(span, reason == null ? "" : reason, found.source());
+        if (!span.revealable()) {
+            log.record(request, "refused", "gateway");
+            throw new Unmask.UnmaskException(span.label() + " values are never revealed.");
+        }
+        boolean allowed = approve.test(request);
+        log.record(request, allowed ? "allowed" : "declined", "gateway");
+        return allowed ? Optional.of(found.values().value(id)) : Optional.empty();
+    }
+
+    private Result kept(Result result, Unmask.Values values, String source) {
+        if (values.isEmpty()) {
+            return result;
+        }
+        String key = UUID.randomUUID().toString().replace("-", "");
+        kept.put(key, new Kept(values, source));
+        return result.with(result.text(), result.pages(), numbered ? values.spans() : List.of(), key);
     }
 
     /** The filtered text alone, where a function of text is wanted. */
