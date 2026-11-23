@@ -8,6 +8,11 @@ follows complydoc's report schema, which is versioned separately, as `run.schema
 
 ### Added
 
+- `Gateway.create().numbered()` numbers each masked value, as `[#12 IBAN ••••4521]`, and
+  gives `result.spans()`. `gateway.reveal(result, 12, reason, approve)` asks the person
+  through a function of yours and gives that one value only if they allow it, as
+  complydoc's `Gateway.reveal`. Categories under `masking.never_reveal` are never revealed;
+  every request is recorded in `~/.complydoc/reveals.jsonl`, without the value.
 - Credentials are found, as in complydoc: API keys, JSON Web Tokens confirmed by their
   header (`jwt_header`), private key blocks and passwords, with placeholders such as
   `your_api_key_here` left alone (`real_secret`). An email-shaped `password@host` in a
